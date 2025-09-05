@@ -1,0 +1,20 @@
+[
+  {
+    "id": "18612c45-e43e-4bdb-a02b-399eb7aa89e7",
+    "title": "Üyelik ve Platform Kullanımına İlişkin Belgeler",
+    "sortOrder": 1,
+    "createdAt": "2025-08-25T23:51:50.252Z"
+  },
+  {
+    "id": "e439a801-d2ba-4d9c-ba7a-aebb92532b6f",
+    "title": "Kişisel Verilerin Korunması ve Gizliliğe İlişkin Belgeler",
+    "sortOrder": 2,
+    "createdAt": "2025-08-25T23:54:56.889Z"
+  },
+  {
+    "id": "6e603c43-8f57-4275-a802-77b7c1f5e415",
+    "title": "Pazarlama ve Ticari İletişime İlişkin Belgeler",
+    "sortOrder": 3,
+    "createdAt": "2025-08-25T23:55:16.729Z"
+  }
+]

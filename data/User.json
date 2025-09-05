@@ -1,0 +1,252 @@
+[
+  {
+    "id": "2684cfbd-b556-47d9-a547-86c2e47669fe",
+    "type": "SELLER",
+    "firstName": "Bayrı",
+    "lastName": "Yetkiner",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1993,
+      "identityNo": "60058036292"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$H5S1BaySNw.yi/8YrCZ26O2GL7F3xNu5aF5Aj.myS4Ah0rAhDG8Pi",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:24.022Z",
+    "updatedAt": "2025-08-11T19:13:24.022Z"
+  },
+  {
+    "id": "2a6a2be0-ac2d-44e6-aab9-4b3265771205",
+    "type": "SELLER",
+    "firstName": "Çağrıtegin",
+    "lastName": "Mayhoş",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1981,
+      "identityNo": "81814987301"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$FBQM8veo8MaW8SVHVZfr.ukkTNxTILHMKH5kotvnSg0UAX8hYCGIe",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:26.360Z",
+    "updatedAt": "2025-08-11T19:13:26.360Z"
+  },
+  {
+    "id": "af9c3d64-b6c0-432d-b03e-71d16a98cd41",
+    "type": "SELLER",
+    "firstName": "Atunçu",
+    "lastName": "Alpuğan",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1992,
+      "identityNo": "75425981372"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$Ohu1YgAjV7RfDa10GrOGAeRRm4mqDNMjQDCWizil79BuZE0lXqDeK",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:27.586Z",
+    "updatedAt": "2025-08-11T19:13:27.586Z"
+  },
+  {
+    "id": "9b431092-8a4f-424f-a660-6896110513df",
+    "type": "SELLER",
+    "firstName": "Burunduk",
+    "lastName": "Oraloğlu",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1982,
+      "identityNo": "07304797401"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$Q.q5yQimbTBpssTgZtJr0OSRAKNMjyhBC5q7wcriR1qKhz960w.Ky",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:28.359Z",
+    "updatedAt": "2025-08-11T19:13:28.359Z"
+  },
+  {
+    "id": "859bd4e9-262b-48d2-b2b8-6002da3ae391",
+    "type": "SELLER",
+    "firstName": "Buçur",
+    "lastName": "Babacan",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1993,
+      "identityNo": "43065588877"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$0l3roT2/Lm3KmuElE91XHedzy.7E5NqNbx22iTNO3e0iCFt65qQbK",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:29.077Z",
+    "updatedAt": "2025-08-11T19:13:29.077Z"
+  },
+  {
+    "id": "1ef69129-dfb0-497e-ab1e-6744c85b00ed",
+    "type": "SELLER",
+    "firstName": "Beğbilgeçikşin",
+    "lastName": "Nalbantoğlu",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1994,
+      "identityNo": "05807452707"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$udwOZEzDA2oKWEbYZqNF4u6dOaqW1AT.xbWMXm5SmC0OdDv9KZNj2",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:30.736Z",
+    "updatedAt": "2025-08-11T19:13:30.736Z"
+  },
+  {
+    "id": "4de5a107-9b40-4786-acfd-c7c7199b1b83",
+    "type": "SELLER",
+    "firstName": "Ergenekatun",
+    "lastName": "Kaplangı",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1987,
+      "identityNo": "64611301739"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$IjXe8OGdoLJzmJA9uG8fm.hZ651PO6.WseUfJfM2kKbOc/UpJs1NS",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:31.794Z",
+    "updatedAt": "2025-08-11T19:13:31.794Z"
+  },
+  {
+    "id": "43ddd864-eb51-48b5-99b9-3c3c4c25b17a",
+    "type": "INDIVIDUAL",
+    "firstName": "Yaman",
+    "lastName": "sayed",
+    "metadata": {},
+    "status": "ACTIVE",
+    "password": "$2b$10$dHF/gQzuJKm47EZIwD4jNue0wrxbeJYpSEFdE0n0MloGX2BuAotv2",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:21:44.284Z",
+    "updatedAt": "2025-08-11T19:21:44.284Z"
+  },
+  {
+    "id": "07691aa3-acbc-4b56-af53-ba587c58059f",
+    "type": "INDIVIDUAL",
+    "firstName": "Ozgur",
+    "lastName": "USLU",
+    "metadata": {},
+    "status": "ACTIVE",
+    "password": "$2b$10$9UBB2cHkM/yD/VdVTV0E3OjllQRUufWY7bFjlDsNYyhQFXG8RZ5qG",
+    "profileImage": "https://storage.youwayapp.com/storage/v1/object/public/avatars/avatars/07691aa3-acbc-4b56-af53-ba587c58059f-1755564344265.jpg",
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-18T17:05:20.685Z",
+    "updatedAt": "2025-08-18T17:05:20.685Z"
+  },
+  {
+    "id": "7e9ff8a9-0e6d-43e7-9924-f8bb4dbb75bb",
+    "type": "INDIVIDUAL",
+    "firstName": "Ayşegül ",
+    "lastName": "Ülkü",
+    "metadata": {},
+    "status": "ACTIVE",
+    "password": "$2b$10$aeOq0OKX6b5VgIuclWjIWeegnV06jkRZVyJ9iQQ.D/TF13R2Ly9Aq",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-20T18:47:08.585Z",
+    "updatedAt": "2025-08-20T18:47:08.585Z"
+  },
+  {
+    "id": "bfda0c0e-da61-4f2c-839c-f1eb3d5769c2",
+    "type": "INDIVIDUAL",
+    "firstName": "gökhan batur",
+    "lastName": "aksoy",
+    "metadata": {},
+    "status": "ACTIVE",
+    "password": "$2b$10$yq8w3kjL8rAZiznYQ3j87.eoewt9bnL2RD3fEBKz23GdGxwvpihqG",
+    "profileImage": "https://storage.youwayapp.com/storage/v1/object/public/avatars/avatars/bfda0c0e-da61-4f2c-839c-f1eb3d5769c2-1756200871027.jpg",
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-26T09:27:40.504Z",
+    "updatedAt": "2025-08-26T09:27:40.504Z"
+  },
+  {
+    "id": "57f7b615-c4b8-425a-a022-5c8d28aef386",
+    "type": "SELLER",
+    "firstName": "Ayşegül",
+    "lastName": "ÜLKÜ",
+    "metadata": null,
+    "status": "ACTIVE",
+    "password": "$2b$10$3ILYyTyKaDjnkAmxw9tvweDJiHlOGTaoYrveRiNCqVXd/lpED6rky",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-25T19:53:43.961Z",
+    "updatedAt": "2025-08-25T19:53:43.961Z"
+  },
+  {
+    "id": "f0742aec-6a61-4215-af7e-090b46dafaae",
+    "type": "SELLER",
+    "firstName": "Ateş",
+    "lastName": "ERDOĞAN",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1983,
+      "identityNo": "61512866500"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$UK9vzaaasNNgo0rot/mrXuPR5mZhfanW1/zW.NqjKV/1vtrsuamZW",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:35.699Z",
+    "updatedAt": "2025-08-11T19:13:35.699Z"
+  },
+  {
+    "id": "3046b01f-ca8a-46cf-ba22-0251b0d3f7b6",
+    "type": "SELLER",
+    "firstName": "Seray",
+    "lastName": "ULUĞ",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1988,
+      "identityNo": "01113831707"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$v4Uzfyr3/evWky.tlfWNxuKqOAjRQAXiqW6S4GnhJRSOUr6cqUOsS",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:33.900Z",
+    "updatedAt": "2025-08-11T19:13:33.900Z"
+  },
+  {
+    "id": "28e2f61c-70c4-45dc-95c9-4861b9bf2887",
+    "type": "SELLER",
+    "firstName": "Tuğçe",
+    "lastName": "ALKAN",
+    "metadata": {
+      "type": "SELLER",
+      "birthYear": 1991,
+      "identityNo": "62005219986"
+    },
+    "status": "ACTIVE",
+    "password": "$2b$10$Z2tY0TluzBwiGKet2E.73eiWiZGRVUEiGPb0dmEj1d5tjjB1jL06e",
+    "profileImage": null,
+    "about": null,
+    "birthDate": null,
+    "createdAt": "2025-08-11T19:13:32.602Z",
+    "updatedAt": "2025-08-11T19:13:32.602Z"
+  }
+]

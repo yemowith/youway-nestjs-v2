@@ -1,0 +1,88 @@
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from 'src/clients/prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
+
+@Injectable()
+export class JwtAuthAdminGuard implements CanActivate {
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader) {
+      throw new UnauthorizedException('No authorization header');
+    }
+
+    try {
+      const token = authHeader.split(' ')[1];
+      if (!token) {
+        throw new UnauthorizedException('No token provided');
+      }
+
+      // Verify and decode the JWT token
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.getOrThrow<string>('jwt.secret'),
+      });
+
+      if (!payload || !payload.sub) {
+        throw new UnauthorizedException('Invalid token payload');
+      }
+
+      // Find user in database
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+        select: {
+          id: true,
+          status: true,
+          metadata: true,
+          identities: {
+            select: {
+              provider: true,
+              providerId: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      if (user.status !== 'ACTIVE') {
+        throw new UnauthorizedException('User account is not active');
+      }
+
+      // Check if user is an active admin
+      const admin = await this.prisma.admin.findFirst({
+        where: {
+          userId: user.id,
+          isActive: true,
+        },
+      });
+      if (!admin) {
+        throw new UnauthorizedException('User is not an active admin');
+      }
+
+      // Attach user and admin to request for later use
+      request.user = user;
+      request.admin = admin;
+      return true;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Invalid authentication');
+    }
+  }
+}

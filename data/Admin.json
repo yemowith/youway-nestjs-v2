@@ -1,0 +1,18 @@
+[
+  {
+    "id": "43ddd864-eb51-48b5-99b9-3c3c4c25b17a",
+    "userId": "43ddd864-eb51-48b5-99b9-3c3c4c25b17a",
+    "isSuperAdmin": true,
+    "isActive": true,
+    "createdAt": "2025-08-25T18:18:18.000Z",
+    "updatedAt": "2025-08-25T18:18:22.000Z"
+  },
+  {
+    "id": "07691aa3-acbc-4b56-af53-ba587c58059f",
+    "userId": "07691aa3-acbc-4b56-af53-ba587c58059f",
+    "isSuperAdmin": true,
+    "isActive": true,
+    "createdAt": "2025-08-25T18:18:59.000Z",
+    "updatedAt": "2025-08-25T18:19:00.000Z"
+  }
+]

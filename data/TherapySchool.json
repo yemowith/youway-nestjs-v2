@@ -1,0 +1,72 @@
+[
+  {
+    "id": "f1a5c1e8-0002-4000-9000-000000000002",
+    "name": "EMDR",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.264Z",
+    "updatedAt": "2025-08-11T19:12:28.264Z"
+  },
+  {
+    "id": "f1a5c1e8-0004-4000-9000-000000000004",
+    "name": "Gestalt terapi",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.264Z",
+    "updatedAt": "2025-08-11T19:12:28.264Z"
+  },
+  {
+    "id": "f1a5c1e8-0003-4000-9000-000000000003",
+    "name": "Psikanalitik / Psikodinamik Terapi",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.264Z",
+    "updatedAt": "2025-08-11T19:12:28.264Z"
+  },
+  {
+    "id": "f1a5c1e8-0001-4000-9000-000000000001",
+    "name": "Bilişsel Davranışçı Terapi (BDT / CBT)",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.264Z",
+    "updatedAt": "2025-08-11T19:12:28.264Z"
+  },
+  {
+    "id": "f1a5c1e8-0005-4000-9000-000000000005",
+    "name": "Davranışçı Terapi",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.264Z",
+    "updatedAt": "2025-08-11T19:12:28.264Z"
+  },
+  {
+    "id": "c67efa11-9fdf-4651-95e7-27dfa8501b71",
+    "name": "Şema Terapi",
+    "description": null,
+    "createdAt": "2025-08-25T19:47:59.555Z",
+    "updatedAt": "2025-08-25T19:47:59.555Z"
+  },
+  {
+    "id": "b71f3385-19f2-426c-af0a-9f3929e01619",
+    "name": "ACT (Kabul ve Kararlılık Terapisi)",
+    "description": null,
+    "createdAt": "2025-08-25T19:48:20.321Z",
+    "updatedAt": "2025-08-25T19:48:20.321Z"
+  },
+  {
+    "id": "073cfaf4-758b-4862-9d95-60b94fc14d5a",
+    "name": "Gottman Çift Terapisi",
+    "description": null,
+    "createdAt": "2025-08-25T19:48:34.886Z",
+    "updatedAt": "2025-08-25T19:48:34.886Z"
+  },
+  {
+    "id": "7305718e-ede3-4bbe-824d-621a166f4f60",
+    "name": "Oyun Terapisi",
+    "description": null,
+    "createdAt": "2025-08-25T19:48:43.561Z",
+    "updatedAt": "2025-08-25T19:48:43.561Z"
+  },
+  {
+    "id": "3d6d240d-9361-4b20-bf45-9ebd3fa98194",
+    "name": "Mindfulness Temelli Yaklaşımlar",
+    "description": null,
+    "createdAt": "2025-08-25T20:11:13.493Z",
+    "updatedAt": "2025-08-25T20:11:13.493Z"
+  }
+]

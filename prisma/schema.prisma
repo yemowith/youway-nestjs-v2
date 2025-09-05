@@ -1,0 +1,875 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Log {
+  id        String   @id @default(uuid()) @db.Uuid
+  message   String
+  level     String
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum UserType {
+  CORPORATE
+  INDIVIDUAL
+  SELLER
+}
+
+model User {
+  id        String     @id @default(uuid()) @db.Uuid
+  type      UserType   @default(INDIVIDUAL)
+  firstName String     @db.VarChar(100)
+  lastName  String     @db.VarChar(100)
+  metadata  Json?
+  status    UserStatus @default(PENDING)
+  password  String?
+
+  identities    Identity[]
+  devices       Device[]
+  refreshTokens RefreshToken[]
+  otps          Otp[]
+
+  profileImage String?   @db.VarChar(255)
+  about        String?   @db.Text
+  birthDate    DateTime? @db.Date
+  createdAt    DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime  @default(now()) @db.Timestamp(6)
+
+  // Options
+  UserOption UserOption[]
+
+  // Notifications
+  notifications Notification[]
+
+  userReferrals UserReferral[] @relation("UserReferrals")
+  referrals     UserReferral[] @relation("Referrals")
+  UserReferral  UserReferral[]
+
+  MessageSender   Message[] @relation("MessageSender")
+  MessageReceiver Message[] @relation("MessageReceiver")
+
+  comments Comment[]
+
+  admin Admin[]
+
+  // Balance
+  balance      Balance[]
+  transactions Transaction[]
+
+  // Deposits
+  deposits Deposit[]
+
+  // Withdrawals
+  withdrawals Withdrawal[]
+
+  // Commissions
+  commissions Commission[]
+
+  // Locations
+  userLocation UserLocation?
+
+  // Orders
+  orders       Order[] @relation("UserOrders")
+  sellerOrders Order[] @relation("SellerOrders")
+
+  // Seller Profile
+  sellerProfile SellerProfile?
+
+  // Appointments
+  userAppointments   Appointment[] @relation("UserAppointments")
+  sellerAppointments Appointment[] @relation("PsychologistAppointments")
+
+  // Seller Availability
+  sellerAvailabilities   SellerAvailability[]
+  sellerUnavailabilities SellerUnavailability[]
+
+  // Seller Appointment Setting
+  sellerSettings SellerSetting[]
+
+  // Seller Packages
+  sellerPackages SellerPackage[]
+}
+
+enum AuthProvider {
+  EMAIL
+  PHONE
+  GOOGLE
+}
+
+enum OtpType {
+  PHONE_VERIFICATION
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  LOGIN
+  TWO_FACTOR_AUTHENTICATION
+}
+
+model Identity {
+  id         String       @id @default(uuid()) @db.Uuid
+  userId     String       @db.Uuid
+  provider   AuthProvider
+  providerId String
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([provider, providerId])
+}
+
+model Device {
+  id            String         @id @default(uuid()) @db.Uuid
+  userId        String         @db.Uuid
+  userAgent     String?
+  ipAddress     String?
+  lastUsedAt    DateTime       @default(now())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid()) @db.Uuid
+  hashedToken String    @unique
+  userId      String    @db.Uuid
+  deviceId    String    @db.Uuid
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device      Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+}
+
+model Otp {
+  id         String    @id @default(uuid()) @db.Uuid
+  code       String
+  type       OtpType
+  target     String // phone number or email
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  userId     String?   @db.Uuid
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+
+  @@index([target, type])
+}
+
+model Attempt {
+  id            String   @id @default(uuid()) @db.Uuid
+  target        String // email or phone
+  type          String // e.g., 'LOGIN'
+  count         Int      @default(1)
+  lastAttemptAt DateTime @updatedAt
+
+  @@unique([target, type])
+}
+
+model BlockedTarget {
+  id           String   @id @default(uuid()) @db.Uuid
+  target       String // email or phone
+  type         String // e.g., 'LOGIN'
+  blockedUntil DateTime
+
+  @@unique([target, type])
+}
+
+model UserOption {
+  id        String @id @default(uuid()) @db.Uuid
+  userId    String @db.Uuid
+  optionKey String @db.VarChar(100)
+  optionVal String @db.VarChar(255)
+  // Relations
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, optionKey])
+  @@index([userId, optionKey])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @db.Uuid
+  type      String
+  message   String
+  details   Json?    @db.Json
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model UserReferral {
+  id           String   @id @default(cuid())
+  userId       String   @unique @db.Uuid
+  referralId   String?  @db.Uuid
+  referralCode String   @unique @db.VarChar(255)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations  
+  user     User  @relation("UserReferrals", fields: [userId], references: [id], onDelete: Cascade, map: "UserReferralToUser")
+  referral User? @relation("Referrals", fields: [referralId], references: [id], onDelete: Cascade, map: "UserReferralToReferral")
+  User     User  @relation(fields: [userId], references: [id])
+}
+
+model UserLocation {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  countryId String   @db.Uuid
+  country   Country  @relation(fields: [countryId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([userId])
+  @@index([countryId])
+}
+
+model Therapy {
+  id             String                 @id @default(uuid()) @db.Uuid
+  name           String                 @db.VarChar(255)
+  description    String?                @db.Text
+  createdAt      DateTime               @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime               @default(now()) @db.Timestamp(6)
+  sellerProfiles SellerProfileTherapy[]
+}
+
+model SellerProfileTherapy {
+  id              String @id @default(uuid()) @db.Uuid
+  sellerProfileId String @db.Uuid
+  therapyId       String @db.Uuid
+
+  sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+  therapy       Therapy       @relation(fields: [therapyId], references: [id], onDelete: Cascade)
+
+  @@unique([sellerProfileId, therapyId])
+  @@index([sellerProfileId])
+  @@index([therapyId])
+}
+
+model TherapySchool {
+  id             String                       @id @default(uuid()) @db.Uuid
+  name           String                       @db.VarChar(255)
+  description    String?                      @db.Text
+  createdAt      DateTime                     @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime                     @default(now()) @db.Timestamp(6)
+  sellerProfiles SellerProfileTherapySchool[]
+}
+
+model SellerProfileTherapySchool {
+  id              String @id @default(uuid()) @db.Uuid
+  sellerProfileId String @db.Uuid
+  therapySchoolId String @db.Uuid
+
+  sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+  therapySchool TherapySchool @relation(fields: [therapySchoolId], references: [id], onDelete: Cascade)
+
+  @@unique([sellerProfileId, therapySchoolId])
+  @@index([sellerProfileId])
+  @@index([therapySchoolId])
+}
+
+enum Status {
+  pending
+  confirmed
+  rejected
+}
+
+model SellerProfile {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @db.Uuid
+
+  slug String @unique @db.VarChar(255)
+
+  about           String? @db.Text
+  jobTitle        String? @db.VarChar(255)
+  educationInfo   String? @db.VarChar(255)
+  experienceInfo  String? @db.VarChar(255)
+  certificateInfo String? @db.VarChar(255)
+
+  website  String? @db.VarChar(255)
+  videoUrl String? @db.VarChar(255)
+
+  address String? @db.VarChar(255)
+
+  status    Status   @default(pending)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  therapies      SellerProfileTherapy[]
+  therapySchools SellerProfileTherapySchool[]
+  comments       Comment[]
+
+  @@index([userId])
+}
+
+model Message {
+  id         String    @id @default(uuid()) @db.Uuid
+  senderId   String    @db.Uuid
+  receiverId String    @db.Uuid
+  content    String    @db.Text
+  type       String?   @default("text") @db.VarChar(50)
+  isRead     Boolean   @default(false)
+  isDeleted  Boolean   @default(false)
+  isReadAt   DateTime? @db.Timestamp(6)
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+
+  sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Comment {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid
+  sellerProfileId String   @db.Uuid
+  content         String   @db.Text
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+
+  stars  Int?          @default(0)
+  status CommentStatus @default(PENDING)
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id           String  @id @default(uuid()) @db.Uuid
+  userId       String  @unique @db.Uuid
+  isSuperAdmin Boolean @default(false)
+  isActive     Boolean @default(true)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([userId])
+}
+
+enum PaymentStatus {
+  PENDING // ödeme başlatıldı ama tamamlanmadı
+  COMPLETED // ödeme alındı
+  FAILED // hata oluştu
+  CANCELLED // kullanıcı iptal etti
+  REFUNDED // iade edildi
+}
+
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+
+  paymentMethodId String  @db.Uuid
+  currencyCode    String  @default("TRY") @db.VarChar(3)
+  orderId         String? @db.Uuid
+  orderNumber     String? @db.VarChar(255)
+
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  currency      Currency      @relation(fields: [currencyCode], references: [code])
+  order         Order?        @relation(fields: [orderId], references: [id])
+
+  amount        Decimal       @db.Decimal(10, 6)
+  status        PaymentStatus @default(PENDING)
+  transactionId String?
+  description   String?
+
+  paidAt    DateTime? // Ödeme tarihi (onaylandığında)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([currencyCode])
+  @@index([orderId])
+}
+
+model PaymentMethod {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique // "IBAN", "PayTR", "PayPal"
+  icon        String?
+  color       String?
+  providerKey String  @unique // "iban", "paytr", "paypal"
+  description String?
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  settings  PaymentSetting[]
+  payments  Payment[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model PaymentSetting {
+  id              String        @id @default(uuid()) @db.Uuid
+  paymentMethodId String        @db.Uuid
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+
+  key   String // örn: "ibanNumber", "merchantId", "apiKey"
+  value String // ilgili değeri (gizli değilse plaintext)
+
+  isSecret  Boolean  @default(false) // Gizli anahtar mı?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([paymentMethodId, key]) // Her method için aynı key yalnızca bir kez tanımlanabilir
+}
+
+model Currency {
+  code      String   @id @unique @db.VarChar(3)
+  name      String   @unique @db.VarChar(20)
+  symbol    String   @db.VarChar(10)
+  isoCode   String   @unique @db.VarChar(3)
+  leftCode  String?  @unique @db.VarChar(3)
+  rightCode String?  @unique @db.VarChar(3)
+  isDefault Boolean  @default(false) @db.Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  payments     Payment[]
+  balances     Balance[]
+  transactions Transaction[]
+  deposits     Deposit[]
+  withdrawals  Withdrawal[]
+  orders       Order[]
+
+  countries Country[]
+
+  packagePrices  PackagePrice[]
+  sellerPackages SellerPackage[]
+
+  @@index([code])
+  @@index([name])
+  @@index([isoCode])
+}
+
+model Balance {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  user         User     @relation(fields: [userId], references: [id])
+  currencyCode String   @default("TRY") @db.VarChar(3)
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+  balance      Decimal  @db.Decimal(15, 6)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, currencyCode])
+  @@index([userId, currencyCode])
+}
+
+enum TransactionType {
+  IN
+  OUT
+}
+
+model Transaction {
+  id            String          @id @default(uuid()) @db.Uuid
+  userId        String          @db.Uuid
+  currencyCode  String          @default("TRY") @db.VarChar(3)
+  user          User            @relation(fields: [userId], references: [id])
+  currency      Currency        @relation(fields: [currencyCode], references: [code])
+  type          TransactionType
+  referenceId   String?
+  referenceType String?
+  amount        Decimal         @default(0) @db.Decimal(15, 6)
+  balance       Decimal         @default(0) @db.Decimal(15, 6)
+  description   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([currencyCode])
+}
+
+model Deposit {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  currencyCode String   @default("TRY") @db.VarChar(3)
+  user         User     @relation(fields: [userId], references: [id])
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+  amount       Decimal  @db.Decimal(15, 6)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([currencyCode])
+}
+
+model Withdrawal {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  currencyCode String   @default("TRY") @db.VarChar(3)
+  user         User     @relation(fields: [userId], references: [id])
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+  amount       Decimal  @db.Decimal(15, 6)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([currencyCode])
+}
+
+model Commission {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  amount    Decimal  @db.Decimal(15, 6)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Country {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @db.VarChar(20)
+  code         String   @unique @default("TR") @db.VarChar(2)
+  currencyCode String   @default("TRY") @db.VarChar(3)
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+  isDefault    Boolean  @default(false) @db.Boolean
+
+  timezone  String   @db.VarChar(20)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  userLocations UserLocation[]
+
+  @@index([code])
+}
+
+enum OrderStatus {
+  PENDING // Sipariş oluşturuldu, ödeme bekleniyor
+  PAID // Ödeme alındı, sipariş onaylandı
+  PROCESSING // İşleniyor
+  COMPLETED // Tamamlandı
+  CANCELLED // İptal edildi
+  REFUNDED // İade edildi
+}
+
+model Order {
+  id           String @id @default(uuid()) @db.Uuid
+  userId       String @db.Uuid
+  sellerId     String @db.Uuid
+  currencyCode String @default("TRY") @db.VarChar(3)
+
+  // Order details
+  orderNumber    String      @unique // Unique order number for display
+  status         OrderStatus @default(PENDING)
+  subtotal       Decimal     @db.Decimal(15, 6) // Total before tax/discount
+  taxAmount      Decimal     @default(0) @db.Decimal(15, 6)
+  discountAmount Decimal     @default(0) @db.Decimal(15, 6)
+  totalAmount    Decimal     @db.Decimal(15, 6) // Final total
+
+  // Customer information
+  customerName  String? @db.VarChar(255)
+  customerEmail String? @db.VarChar(255)
+  customerPhone String? @db.VarChar(20)
+
+  // Notes
+  notes      String? @db.Text
+  adminNotes String? @db.Text // Internal notes
+
+  // Timestamps
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @db.Timestamp(6)
+  paidAt    DateTime? // When payment was completed
+
+  // Relations
+  user     User        @relation("UserOrders", fields: [userId], references: [id])
+  seller   User        @relation("SellerOrders", fields: [sellerId], references: [id])
+  currency Currency    @relation(fields: [currencyCode], references: [code])
+  items    OrderItem[]
+  payments Payment[]
+
+  @@index([userId])
+  @@index([sellerId])
+  @@index([currencyCode])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id      String @id @default(uuid()) @db.Uuid
+  orderId String @db.Uuid
+
+  // Item details
+  packageId       String  @db.Uuid
+  packageName     String  @db.VarChar(255)
+  packageDuration Int // Duration in minutes
+  unitPrice       Decimal @db.Decimal(15, 6)
+  quantity        Int     @default(1)
+  totalPrice      Decimal @db.Decimal(15, 6) // unitPrice * quantity
+
+  // Appointment details (if applicable)
+  appointmentId String? @db.Uuid
+  hour          String? // Start time for the appointment/service
+  dateStr       String? // Date string for the appointment
+
+  // Additional details as JSON
+  details Json? // Flexible storage for additional item details
+
+  // Timestamps
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  // Relations
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([appointmentId])
+}
+
+model Application {
+  id        String @id @default(uuid()) @db.Uuid
+  firstName String @db.VarChar(100)
+  lastName  String @db.VarChar(100)
+  email     String @db.VarChar(255)
+  phone     String @db.VarChar(20)
+
+  licenseName      String  @db.VarChar(20)
+  highLevelLicense Boolean @default(false)
+  areaExpertise    String  @db.VarChar(255)
+
+  cvUrl String @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+
+  // Relations
+}
+
+model PageCategory {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String   @db.VarChar(255)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  pages     Page[]
+}
+
+model Page {
+  id             String       @id @default(uuid()) @db.Uuid
+  title          String       @db.VarChar(255)
+  slug           String       @unique @db.VarChar(255)
+  categoryId     String       @db.Uuid
+  category       PageCategory @relation(fields: [categoryId], references: [id])
+  template       String       @default("default")
+  content        String       @db.Text
+  status         String       @default("published")
+  image          String?      @db.VarChar(255)
+  seoTitle       String?      @db.VarChar(255)
+  seoDescription String?      @db.Text
+  seoKeywords    String?      @db.VarChar(255)
+  seoImage       String?      @db.VarChar(255)
+  seoUrl         String?      @db.VarChar(255)
+  seoCanonical   String?      @db.VarChar(255)
+  seoRobots      String?      @db.VarChar(255)
+  type           String       @default("page")
+  sortOrder      Int          @default(0)
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime     @default(now()) @db.Timestamp(6)
+
+  // Relations
+  menuItems PageMenuItem[]
+}
+
+model PageMenu {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  isPrimary Boolean  @default(false)
+
+  tags String[]
+
+  items PageMenuItem[]
+}
+
+enum PageMenuItemType {
+  PAGE
+  CUSTOM_LINK
+}
+
+model PageMenuItem {
+  id          String            @id @default(uuid()) @db.Uuid
+  titleItem   String            @db.VarChar(255)
+  link        String?           @db.VarChar(255)
+  description String?           @db.Text
+  type        PageMenuItemType? @default(PAGE)
+  menuId      String            @db.Uuid
+  pageId      String?           @db.Uuid
+  sortOrder   Int               @default(0)
+  createdAt   DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime          @default(now()) @db.Timestamp(6)
+
+  menu PageMenu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  page Page?    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model Package {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  durationMin   Int // 15, 30, 45 dk
+  commission    Decimal? @default(0) @db.Decimal(10, 6)
+  image         String?
+  icon          String?
+  color         String?
+  isFree        Boolean  @default(false)
+  recommended   Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  canBeReplayed Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @updatedAt
+
+  sellerPackages SellerPackage[]
+  appointments   Appointment[]
+
+  // Relations
+  prices PackagePrice[]
+}
+
+model Setting {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique @db.VarChar(255)
+  value     String   @db.Text
+  group     String   @default("general") @db.VarChar(255)
+  type      String   @default("text") @db.VarChar(50)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+}
+
+model PackagePrice {
+  id        String  @id @default(uuid()) @db.Uuid
+  packageId String  @db.Uuid
+  package   Package @relation(fields: [packageId], references: [id])
+
+  priceMin Decimal @db.Decimal(10, 6)
+  priceMax Decimal @db.Decimal(10, 6)
+
+  isFree Boolean @default(false)
+
+  currencyCode String   @default("TRY") @db.VarChar(3)
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, currencyCode])
+}
+
+model SellerPackage {
+  id           String   @id @default(uuid()) @db.Uuid
+  sellerId     String   @db.Uuid
+  seller       User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  packageId    String   @db.Uuid
+  package      Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  price        Decimal  @db.Decimal(10, 6)
+  currencyCode String   @default("TRY") @db.VarChar(3)
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([sellerId, packageId])
+}
+
+enum AppointmentStatus {
+  PENDING
+  SCHEDULED
+  STARTED
+  COMPLETED
+  CANCELLED
+}
+
+model Appointment {
+  id        String @id @default(uuid()) @db.Uuid
+  userId    String @db.Uuid
+  sellerId  String @db.Uuid
+  packageId String @db.Uuid
+
+  user    User    @relation("UserAppointments", fields: [userId], references: [id])
+  seller  User    @relation("PsychologistAppointments", fields: [sellerId], references: [id])
+  package Package @relation(fields: [packageId], references: [id])
+
+  startTime DateTime          @db.Timestamptz(3)
+  endTime   DateTime          @db.Timestamptz(3)
+  timezone  String            @default("Europe/Istanbul")
+  status    AppointmentStatus @default(SCHEDULED)
+
+  createdAt DateTime @default(now())
+}
+
+model DefaultAvailability {
+  id          String   @id @default(uuid()) @db.Uuid
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SellerAvailability {
+  id          String   @id @default(uuid()) @db.Uuid
+  sellerId    String   @db.Uuid
+  seller      User     @relation(fields: [sellerId], references: [id])
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([sellerId, dayOfWeek])
+  @@index([sellerId])
+}
+
+model SellerUnavailability {
+  id        String   @id @default(uuid()) @db.Uuid
+  sellerId  String   @db.Uuid
+  seller    User     @relation(fields: [sellerId], references: [id])
+  startTime DateTime @db.Timestamptz(3)
+  endTime   DateTime @db.Timestamptz(3)
+  reason    String?
+  createdBy String?  @default("SYSTEM")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SellerSetting {
+  id       String @id @default(uuid()) @db.Uuid
+  sellerId String @db.Uuid
+  seller   User   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  isActive                    Boolean @default(true)
+  maxDailyAppointments        Int     @default(30)
+  durationBetweenAppointments Int     @default(15)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sellerId])
+  @@index([sellerId])
+}

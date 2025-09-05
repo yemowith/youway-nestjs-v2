@@ -1,0 +1,12 @@
+[
+  {
+    "id": "f1a5c1e8-0001-4000-9000-000000000001",
+    "name": "Türkiye",
+    "code": "TR",
+    "currencyCode": "TRY",
+    "isDefault": true,
+    "timezone": "Europe/Istanbul",
+    "createdAt": "2025-08-26T12:21:07.461Z",
+    "updatedAt": "2025-08-26T12:21:07.461Z"
+  }
+]

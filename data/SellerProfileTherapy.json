@@ -1,0 +1,152 @@
+[
+  {
+    "id": "26a09748-661b-4962-aa76-f707c9d3b1b7",
+    "sellerProfileId": "a1d4d2ec-cc5b-4734-8162-2770c5169eb5",
+    "therapyId": "f1a5c1e8-0002-4000-9000-000000000002"
+  },
+  {
+    "id": "7469e149-79df-4d8d-bded-74bb9ccff568",
+    "sellerProfileId": "a1d4d2ec-cc5b-4734-8162-2770c5169eb5",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "bc40aee8-6b0b-4d23-8fe4-94b45d809cde",
+    "sellerProfileId": "a1d4d2ec-cc5b-4734-8162-2770c5169eb5",
+    "therapyId": "f1a5c1e8-0003-4000-9000-000000000003"
+  },
+  {
+    "id": "fc2eb8c8-4c6a-46df-8af8-c11e5b444f6c",
+    "sellerProfileId": "a1d4d2ec-cc5b-4734-8162-2770c5169eb5",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  },
+  {
+    "id": "24643d5c-dcb6-4b6e-a299-bfc63b60c60e",
+    "sellerProfileId": "b385e750-f403-45f9-abca-f655dd04e053",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "e6dfdbbb-bda5-4068-96a4-87b929503875",
+    "sellerProfileId": "b385e750-f403-45f9-abca-f655dd04e053",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  },
+  {
+    "id": "9489d3a1-045c-45fd-a4aa-b439aca65ce8",
+    "sellerProfileId": "b385e750-f403-45f9-abca-f655dd04e053",
+    "therapyId": "f1a5c1e8-0003-4000-9000-000000000003"
+  },
+  {
+    "id": "831a2ef0-b5d4-441c-bf48-fed846d6c48f",
+    "sellerProfileId": "d1a7452a-5ce0-4aff-b338-53b2ba548cbb",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  },
+  {
+    "id": "5ad14de0-493c-4d46-a677-b9651c70a1b3",
+    "sellerProfileId": "d1a7452a-5ce0-4aff-b338-53b2ba548cbb",
+    "therapyId": "f1a5c1e8-0003-4000-9000-000000000003"
+  },
+  {
+    "id": "4c50e1da-c8f9-496c-8d65-4c12e91f7810",
+    "sellerProfileId": "d1a7452a-5ce0-4aff-b338-53b2ba548cbb",
+    "therapyId": "f1a5c1e8-0002-4000-9000-000000000002"
+  },
+  {
+    "id": "8a362721-d840-4aba-9cf2-c1c83db7a58a",
+    "sellerProfileId": "d1a7452a-5ce0-4aff-b338-53b2ba548cbb",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "04d99e19-4533-4bec-b69c-8906fa9b7172",
+    "sellerProfileId": "d9e6f44a-1e1c-48f5-80bc-bfeda6e41a36",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "0c8e06ac-f231-4b49-93c4-42762ec2f0c4",
+    "sellerProfileId": "d9e6f44a-1e1c-48f5-80bc-bfeda6e41a36",
+    "therapyId": "f1a5c1e8-0002-4000-9000-000000000002"
+  },
+  {
+    "id": "ece401bd-64de-49b3-8636-be6609b44b33",
+    "sellerProfileId": "fce71502-ff8e-4214-beb3-92c45ecb3203",
+    "therapyId": "f1a5c1e8-0003-4000-9000-000000000003"
+  },
+  {
+    "id": "8470eb7e-0bcb-4140-8e34-74471336779e",
+    "sellerProfileId": "fce71502-ff8e-4214-beb3-92c45ecb3203",
+    "therapyId": "f1a5c1e8-0002-4000-9000-000000000002"
+  },
+  {
+    "id": "4958998a-4e81-4331-85bd-4b79aa7fb1ff",
+    "sellerProfileId": "fce71502-ff8e-4214-beb3-92c45ecb3203",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "c9d3436d-a81c-4bb7-90a6-e90f9b1fe08e",
+    "sellerProfileId": "f29a8228-0cd5-4b6c-9fd3-7442e6a631cd",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  },
+  {
+    "id": "01d358bb-c41d-4b81-a769-1f8285e2b615",
+    "sellerProfileId": "f29a8228-0cd5-4b6c-9fd3-7442e6a631cd",
+    "therapyId": "f1a5c1e8-0002-4000-9000-000000000002"
+  },
+  {
+    "id": "10300b5d-66e2-4983-b186-3e5468d1af9f",
+    "sellerProfileId": "f29a8228-0cd5-4b6c-9fd3-7442e6a631cd",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "388f7ffd-3fb0-4faf-b8de-8acae3685d82",
+    "sellerProfileId": "f29a8228-0cd5-4b6c-9fd3-7442e6a631cd",
+    "therapyId": "f1a5c1e8-0003-4000-9000-000000000003"
+  },
+  {
+    "id": "58b5474d-d5f4-4999-b5aa-9a3893f21daa",
+    "sellerProfileId": "74717be6-85b1-4da2-9302-0b644502ea4c",
+    "therapyId": "81bcf68c-f9a5-4c43-ba89-3d286c6761a1"
+  },
+  {
+    "id": "7b4d46bd-60a4-493d-95b4-e13df4c195ca",
+    "sellerProfileId": "74717be6-85b1-4da2-9302-0b644502ea4c",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "9438709f-f09e-471a-8c2c-a1b4e5d20ce8",
+    "sellerProfileId": "63bddca7-3c91-4ec3-b1f2-86a7e5add0d6",
+    "therapyId": "f1a5c1e8-0001-4000-9000-000000000001"
+  },
+  {
+    "id": "b9916969-9501-4c42-98a5-675c747f899c",
+    "sellerProfileId": "63bddca7-3c91-4ec3-b1f2-86a7e5add0d6",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  },
+  {
+    "id": "29bb492c-76d3-4de9-825a-064b9bbd49c1",
+    "sellerProfileId": "f275ecf2-62da-480c-939f-dede8794ca40",
+    "therapyId": "f1a5c1e8-0002-4000-9000-000000000002"
+  },
+  {
+    "id": "51e73478-78ed-470a-a4ce-86896f041c4b",
+    "sellerProfileId": "f275ecf2-62da-480c-939f-dede8794ca40",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  },
+  {
+    "id": "b25d71cc-14b3-4754-988f-11e56951139b",
+    "sellerProfileId": "dbe4c463-9d78-4b4e-9eac-508b98aebc56",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  },
+  {
+    "id": "d1027365-3715-47b0-becb-5b3a3e8b2e82",
+    "sellerProfileId": "dbe4c463-9d78-4b4e-9eac-508b98aebc56",
+    "therapyId": "f1a5c1e8-0002-4000-9000-000000000002"
+  },
+  {
+    "id": "34e96a2d-f863-4902-82b3-f47efe287ae6",
+    "sellerProfileId": "8d6897e3-eae0-4dc0-8773-02ffafb23365",
+    "therapyId": "f1a5c1e8-0003-4000-9000-000000000003"
+  },
+  {
+    "id": "9b6af351-e43b-437e-9d02-86c5cd06e053",
+    "sellerProfileId": "8d6897e3-eae0-4dc0-8773-02ffafb23365",
+    "therapyId": "f1a5c1e8-0004-4000-9000-000000000004"
+  }
+]

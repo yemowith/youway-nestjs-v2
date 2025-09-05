@@ -1,0 +1,107 @@
+[
+  {
+    "id": "86455b17-2250-4db4-ae7e-0bf4ee108e53",
+    "userId": "2684cfbd-b556-47d9-a547-86c2e47669fe",
+    "provider": "EMAIL",
+    "providerId": "bayr8h.yetkiner74@yahoo.com",
+    "createdAt": "2025-08-11T19:13:24.022Z"
+  },
+  {
+    "id": "f52c88cb-2ca4-4db1-895b-1fd7fe671751",
+    "userId": "2a6a2be0-ac2d-44e6-aab9-4b3265771205",
+    "provider": "EMAIL",
+    "providerId": "cagr8htegin_mayhos@yahoo.com",
+    "createdAt": "2025-08-11T19:13:26.360Z"
+  },
+  {
+    "id": "f3889441-4db4-48ba-bf8c-f41e9356832d",
+    "userId": "af9c3d64-b6c0-432d-b03e-71d16a98cd41",
+    "provider": "EMAIL",
+    "providerId": "atuncu.alpugan@hotmail.com",
+    "createdAt": "2025-08-11T19:13:27.586Z"
+  },
+  {
+    "id": "8774bffa-6d64-4cde-aa77-7c474f9a9f9b",
+    "userId": "9b431092-8a4f-424f-a660-6896110513df",
+    "provider": "EMAIL",
+    "providerId": "burunduk_oraloglu@hotmail.com",
+    "createdAt": "2025-08-11T19:13:28.359Z"
+  },
+  {
+    "id": "c38267cb-a80f-46f4-8fb5-61caa2235772",
+    "userId": "859bd4e9-262b-48d2-b2b8-6002da3ae391",
+    "provider": "EMAIL",
+    "providerId": "bucur_babacan@gmail.com",
+    "createdAt": "2025-08-11T19:13:29.077Z"
+  },
+  {
+    "id": "6d57c962-49b3-4475-860e-beae37aa4183",
+    "userId": "1ef69129-dfb0-497e-ab1e-6744c85b00ed",
+    "provider": "EMAIL",
+    "providerId": "begbilgeciksin.nalbantoglu@gmail.com",
+    "createdAt": "2025-08-11T19:13:30.736Z"
+  },
+  {
+    "id": "595e09d3-5372-437a-b6c6-fc64de5e05fd",
+    "userId": "43ddd864-eb51-48b5-99b9-3c3c4c25b17a",
+    "provider": "EMAIL",
+    "providerId": "yemen@sayedsoft.com",
+    "createdAt": "2025-08-11T19:21:44.284Z"
+  },
+  {
+    "id": "204ba9dd-4206-4a69-b21c-a17916955b49",
+    "userId": "07691aa3-acbc-4b56-af53-ba587c58059f",
+    "provider": "EMAIL",
+    "providerId": "youwayteknolojias@gmail.com",
+    "createdAt": "2025-08-18T17:05:20.685Z"
+  },
+  {
+    "id": "39737bff-5804-46f6-a808-70517d44c4d2",
+    "userId": "7e9ff8a9-0e6d-43e7-9924-f8bb4dbb75bb",
+    "provider": "EMAIL",
+    "providerId": "aysegul.ulku@gmail.com",
+    "createdAt": "2025-08-20T18:47:08.585Z"
+  },
+  {
+    "id": "76233f10-ca86-4fba-864a-d2f0a748e775",
+    "userId": "bfda0c0e-da61-4f2c-839c-f1eb3d5769c2",
+    "provider": "PHONE",
+    "providerId": "+905057674125",
+    "createdAt": "2025-08-26T09:27:40.504Z"
+  },
+  {
+    "id": "0119e61d-973c-4910-8920-57997defb693",
+    "userId": "57f7b615-c4b8-425a-a022-5c8d28aef386",
+    "provider": "EMAIL",
+    "providerId": "aysegululku@gmail.com",
+    "createdAt": "2025-08-25T19:53:43.961Z"
+  },
+  {
+    "id": "e8e91c92-5847-4ae7-99e3-c8c9ab80c452",
+    "userId": "f0742aec-6a61-4215-af7e-090b46dafaae",
+    "provider": "EMAIL",
+    "providerId": "arcuk_cetiner78@yahoo.com",
+    "createdAt": "2025-08-11T19:13:35.699Z"
+  },
+  {
+    "id": "8f908716-7fbd-401a-857f-1bc0b617756e",
+    "userId": "3046b01f-ca8a-46cf-ba22-0251b0d3f7b6",
+    "provider": "EMAIL",
+    "providerId": "buyruk_pektemek58@yahoo.com",
+    "createdAt": "2025-08-11T19:13:33.900Z"
+  },
+  {
+    "id": "f5f51ceb-1b89-49d1-9254-e19d1fdfeafc",
+    "userId": "28e2f61c-70c4-45dc-95c9-4861b9bf2887",
+    "provider": "EMAIL",
+    "providerId": "ekin.kasapoglu@gmail.com",
+    "createdAt": "2025-08-11T19:13:32.602Z"
+  },
+  {
+    "id": "52e43b50-fd52-48fd-b993-ca8d95d59515",
+    "userId": "4de5a107-9b40-4786-acfd-c7c7199b1b83",
+    "provider": "EMAIL",
+    "providerId": "ergenekatun.kaplang8h3@hotmail.com",
+    "createdAt": "2025-08-11T19:13:31.794Z"
+  }
+]

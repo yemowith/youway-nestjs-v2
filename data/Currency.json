@@ -1,0 +1,13 @@
+[
+  {
+    "code": "TRY",
+    "name": "Türk Lirası",
+    "symbol": "₺",
+    "isoCode": "TRY",
+    "leftCode": "",
+    "rightCode": "₺",
+    "isDefault": true,
+    "createdAt": "2025-08-26T12:21:07.416Z",
+    "updatedAt": "2025-08-28T14:44:33.978Z"
+  }
+]

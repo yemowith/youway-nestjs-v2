@@ -1,0 +1,44 @@
+[
+  {
+    "id": "f1a5c1e8-0004-4000-9000-000000000004",
+    "name": "Cinsel Terapi",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.098Z",
+    "updatedAt": "2025-08-11T19:12:28.098Z"
+  },
+  {
+    "id": "f1a5c1e8-0002-4000-9000-000000000002",
+    "name": "Çocuk Terapisi",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.098Z",
+    "updatedAt": "2025-08-11T19:12:28.098Z"
+  },
+  {
+    "id": "f1a5c1e8-0003-4000-9000-000000000003",
+    "name": "Ergen Terapisi",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.098Z",
+    "updatedAt": "2025-08-11T19:12:28.098Z"
+  },
+  {
+    "id": "f1a5c1e8-0001-4000-9000-000000000001",
+    "name": "Çift Terapisi",
+    "description": null,
+    "createdAt": "2025-08-11T19:12:28.098Z",
+    "updatedAt": "2025-08-11T19:12:28.098Z"
+  },
+  {
+    "id": "f68309d5-c643-4ec4-a6e1-e7054d017115",
+    "name": "Aile Terapisi",
+    "description": null,
+    "createdAt": "2025-08-25T19:42:41.272Z",
+    "updatedAt": "2025-08-25T19:42:41.272Z"
+  },
+  {
+    "id": "81bcf68c-f9a5-4c43-ba89-3d286c6761a1",
+    "name": "Yetişkin Terapisi",
+    "description": null,
+    "createdAt": "2025-08-25T17:46:28.047Z",
+    "updatedAt": "2025-08-25T17:46:28.047Z"
+  }
+]
