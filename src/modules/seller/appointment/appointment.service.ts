@@ -256,10 +256,7 @@ export class AppointmentService {
       timestamp: new Date(),
     };
 
-    this.eventEmitter.emitAsync(
-      'appointment.scheduled',
-      appointmentScheduledEvent,
-    );
+    this.eventEmitter.emit('appointment.scheduled', appointmentScheduledEvent);
   }
 
   async getAppointments(params: { sellerId: string; date: string }) {
@@ -400,7 +397,7 @@ export class AppointmentService {
           },
         },
       },
-      orderBy: { startTime: 'desc' },
+      orderBy: { startTime: 'asc' },
     });
 
     if (!appointment) {
@@ -413,6 +410,175 @@ export class AppointmentService {
         appointment.packageId,
         appointment.sellerId,
       ),
+      user: {
+        ...appointment.user,
+        profileImage: this.avatarService.getProfileAvatar(appointment.user),
+      },
+      seller: {
+        ...appointment.seller,
+        profileImage: this.avatarService.getProfileAvatar(appointment.seller),
+      },
     };
+  }
+
+  /**
+   * Get the last appointments list for a user or seller
+   */
+  async getLastAppointments(params: {
+    userId?: string;
+    sellerId?: string;
+    limit?: number;
+  }): Promise<AppointmentResponseDto[]> {
+    const now = this.datetimeService.getNowISOInDefaultTimezone();
+    const { userId, sellerId, limit = 10 } = params;
+
+    if (userId && sellerId) {
+      throw new BadRequestException(
+        'Both userId and sellerId cannot be provided',
+      );
+    }
+
+    if (!userId && !sellerId) {
+      throw new BadRequestException(
+        'Either userId or sellerId must be provided',
+      );
+    }
+
+    const whereClause: any = {};
+
+    if (userId) {
+      whereClause.userId = userId;
+    }
+
+    if (sellerId) {
+      whereClause.sellerId = sellerId;
+    }
+
+    const appointments = await this.prisma.appointment.findMany({
+      where: {
+        status: AppointmentStatus.SCHEDULED,
+        AND: {
+          endTime: {
+            gt: now,
+          },
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profileImage: true,
+          },
+        },
+        seller: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profileImage: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+
+    return await Promise.all(
+      appointments.map(async (appointment) => ({
+        ...appointment,
+        user: {
+          ...appointment.user,
+          profileImage: this.avatarService.getProfileAvatar(appointment.user),
+        },
+        seller: {
+          ...appointment.seller,
+          profileImage: this.avatarService.getProfileAvatar(appointment.seller),
+        },
+        package: await this.packagesService.getPackageById(
+          appointment.packageId,
+          appointment.sellerId,
+        ),
+      })),
+    );
+  }
+
+  /**
+   * Get appointments for a seller today
+   */
+  async getSellerAppointmentsToday(
+    sellerId: string,
+  ): Promise<AppointmentResponseDto[]> {
+    // Get seller's timezone
+    const location = await this.locationService.getLocation(sellerId);
+    if (!location) {
+      throw new BadRequestException('Seller location not found');
+    }
+
+    if (!location.country?.timezone) {
+      throw new BadRequestException('Seller timezone not found');
+    }
+
+    const sellerTimezone = location.country.timezone;
+
+    // Get today's date range in seller's timezone
+    const today = DateTime.now().setZone(sellerTimezone);
+    const startOfDay = today.startOf('day').toJSDate();
+    const endOfDay = today.endOf('day').toJSDate();
+
+    const appointments = await this.prisma.appointment.findMany({
+      where: {
+        sellerId,
+        startTime: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+        status: {
+          in: [
+            AppointmentStatus.SCHEDULED,
+            AppointmentStatus.STARTED,
+            AppointmentStatus.COMPLETED,
+          ],
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profileImage: true,
+          },
+        },
+        seller: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profileImage: true,
+          },
+        },
+      },
+      orderBy: { startTime: 'asc' },
+    });
+
+    return await Promise.all(
+      appointments.map(async (appointment) => ({
+        ...appointment,
+        user: {
+          ...appointment.user,
+          profileImage: this.avatarService.getProfileAvatar(appointment.user),
+        },
+        seller: {
+          ...appointment.seller,
+          profileImage: this.avatarService.getProfileAvatar(appointment.seller),
+        },
+        package: await this.packagesService.getPackageById(
+          appointment.packageId,
+          appointment.sellerId,
+        ),
+      })),
+    );
   }
 }

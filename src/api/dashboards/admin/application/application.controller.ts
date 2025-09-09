@@ -23,10 +23,28 @@ export type ApplicationResponse = {
   phone: string;
   licenseName: string;
   highLevelLicense: boolean;
-  areaExpertise: string;
+  highLevelLicenseName?: string;
   cvUrl: string;
   createdAt: Date;
   updatedAt: Date;
+  therapies: {
+    id: string;
+    applicationId: string;
+    therapyId: string;
+    therapy: {
+      id: string;
+      name: string;
+    };
+  }[];
+  therapySchools: {
+    id: string;
+    applicationId: string;
+    therapySchoolId: string;
+    therapySchool: {
+      id: string;
+      name: string;
+    };
+  }[];
 };
 
 export type ApplicationInput = {
@@ -35,8 +53,11 @@ export type ApplicationInput = {
   email: string;
   phone: string;
   licenseName: string;
-  highLevelLicense?: boolean;
-  areaExpertise: string;
+  highLevelLicense?: string; // Changed to string for multipart form data
+  highLevelLicenseName?: string;
+  therapies?: string;
+  therapySchools?: string;
+  userAgreement: string;
 };
 
 @ApiTags('Application')

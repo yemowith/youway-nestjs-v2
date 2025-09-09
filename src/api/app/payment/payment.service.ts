@@ -16,6 +16,7 @@ import { PayTrService } from 'src/modules/payment-methods/pay-tr/pay-tr.service'
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AppointmentService } from 'src/modules/seller/appointment/appointment.service';
+import { CommissionService } from 'src/modules/accounting/commission/commission.service';
 
 @Injectable()
 export class PaymentService {
@@ -27,6 +28,7 @@ export class PaymentService {
     private readonly configService: ConfigService,
     private readonly eventEmitter: EventEmitter2,
     private readonly appointmentService: AppointmentService,
+    private readonly commissionService: CommissionService,
   ) {}
 
   private async validateOrder(order: Order): Promise<boolean> {
@@ -275,29 +277,40 @@ export class PaymentService {
       throw new BadRequestException('Payment is not pending');
     }
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: { status: PaymentStatus.COMPLETED },
-      });
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        await tx.payment.update({
+          where: { id: payment.id },
+          data: { status: PaymentStatus.COMPLETED },
+        });
 
-      await tx.order.update({
-        where: { id: payment.orderId! },
-        data: { status: OrderStatus.COMPLETED },
-      });
+        await tx.order.update({
+          where: { id: payment.orderId! },
+          data: { status: OrderStatus.COMPLETED },
+        });
 
-      const items = await tx.orderItem.findMany({
-        where: { orderId: payment.orderId! },
-      });
+        const items = await tx.orderItem.findMany({
+          where: { orderId: payment.orderId! },
+        });
 
-      for (const item of items) {
-        if (item.appointmentId) {
-          await this.appointmentService.scheduleAppointment({
-            appointmentId: item.appointmentId,
-          });
+        for (const item of items) {
+          if (item.appointmentId) {
+            await this.appointmentService.scheduleAppointment({
+              appointmentId: item.appointmentId,
+            });
+          }
         }
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+
+    for (const item of payment.order.items) {
+      if (item.appointmentId) {
+        await this.commissionService.createCommission(item.appointmentId);
       }
-    });
+    }
   }
 
   async getOrderIdByNumber(orderNumber: string): Promise<string | null> {

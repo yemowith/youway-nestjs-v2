@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../../clients/prisma/prisma.service'
-import { CreateMessageDto } from './dto/create-message.dto'
-import { AvatarsService } from 'src/modules/user/avatar/avatars.service'
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../clients/prisma/prisma.service';
+import { CreateMessageDto } from './dto/create-message.dto';
+import { AvatarsService } from 'src/modules/user/avatar/avatars.service';
 
 @Injectable()
 export class ChatService {
@@ -16,7 +16,7 @@ export class ChatService {
         ...dto,
         senderId: userId,
       },
-    })
+    });
   }
 
   async getChatList(userId: string) {
@@ -25,18 +25,18 @@ export class ChatService {
       where: { senderId: userId },
       select: { receiverId: true },
       distinct: ['receiverId'],
-    })
+    });
     const received = await this.prisma.message.findMany({
       where: { receiverId: userId },
       select: { senderId: true },
       distinct: ['senderId'],
-    })
+    });
     const userIds = [
       ...new Set([
         ...sent.map((m) => m.receiverId),
         ...received.map((m) => m.senderId),
       ]),
-    ].filter((id) => id && id !== userId)
+    ].filter((id) => id && id !== userId);
     // Optionally, fetch user details
     const users = await this.prisma.user.findMany({
       where: { id: { in: userIds } },
@@ -46,7 +46,7 @@ export class ChatService {
         lastName: true,
         profileImage: true,
       },
-    })
+    });
     // For each user, fetch the last message exchanged with the current user
     const userWithLastMessage = await Promise.all(
       users.map(async (user) => {
@@ -58,15 +58,15 @@ export class ChatService {
             ],
           },
           orderBy: { createdAt: 'desc' },
-        })
+        });
         return {
           ...user,
           profileImage: this.avatarsService.getProfileAvatar(user),
           lastMessage,
-        }
+        };
       }),
-    )
-    return userWithLastMessage
+    );
+    return userWithLastMessage;
   }
 
   async getChatMessages(
@@ -75,8 +75,8 @@ export class ChatService {
     page: number | string,
     limit: number | string,
   ) {
-    const pageNum = Number(page) || 1
-    const limitNum = Number(limit) || 10
+    const pageNum = Number(page) || 1;
+    const limitNum = Number(limit) || 10;
     const messages = await this.prisma.message.findMany({
       where: {
         OR: [
@@ -97,7 +97,7 @@ export class ChatService {
       },
       take: limitNum,
       skip: (pageNum - 1) * limitNum,
-    })
+    });
 
     const receiver = await this.prisma.user.findUnique({
       where: { id: otherUserId },
@@ -107,7 +107,7 @@ export class ChatService {
         lastName: true,
         profileImage: true,
       },
-    })
+    });
 
     return {
       messages,
@@ -115,20 +115,63 @@ export class ChatService {
         ...receiver,
         profileImage: this.avatarsService.getProfileAvatar(receiver),
       },
-    }
+    };
   }
 
   async markMessageAsRead(messageId: string) {
     return this.prisma.message.update({
       where: { id: messageId },
       data: { isRead: true, isReadAt: new Date() },
-    })
+    });
   }
 
   async markMessageAsDeleted(messageId: string) {
     return this.prisma.message.update({
       where: { id: messageId },
       data: { isDeleted: true },
-    })
+    });
+  }
+
+  async getLastMessages(userId: string, limit: number = 10) {
+    // Get the last messages where the user is either sender or receiver
+    const messages = await this.prisma.message.findMany({
+      where: {
+        OR: [{ senderId: userId }, { receiverId: userId }],
+        isDeleted: false, // Exclude deleted messages
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        sender: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profileImage: true,
+          },
+        },
+        receiver: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profileImage: true,
+          },
+        },
+      },
+    });
+
+    // Process messages to include avatar URLs
+    return messages.map((message) => ({
+      ...message,
+      sender: {
+        ...message.sender,
+        profileImage: this.avatarsService.getProfileAvatar(message.sender),
+      },
+      receiver: {
+        ...message.receiver,
+        profileImage: this.avatarsService.getProfileAvatar(message.receiver),
+      },
+    }));
   }
 }

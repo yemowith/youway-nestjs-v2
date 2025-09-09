@@ -5,6 +5,9 @@ import { PrismaService } from 'src/clients/prisma/prisma.service';
 import { DatetimeService } from 'src/helpers/datetime/datetime.service';
 import { AvailabilityService } from 'src/modules/seller/availability/availability.service';
 import { AppointmentService } from 'src/modules/seller/appointment/appointment.service';
+import { CommissionService } from 'src/modules/accounting/commission/commission.service';
+import { AccountingService } from 'src/modules/accounting/accounting.service';
+import { PaymentService } from 'src/api/app/payment/payment.service';
 
 @Injectable()
 @Command({
@@ -22,6 +25,9 @@ export class TesterCommand extends CommandRunner {
     private readonly datetime: DatetimeService,
     private readonly availabilityService: AvailabilityService,
     private readonly appointmentService: AppointmentService,
+    private readonly commissionService: CommissionService,
+    private readonly accountingService: AccountingService,
+    private readonly paymentService: PaymentService,
   ) {
     super();
   }
@@ -137,8 +143,25 @@ export class TesterCommand extends CommandRunner {
     // await this.makeTestAppointment();
     // const availableSlots = await this.getAvailableSellers();
 
-    await this.appointmentService.scheduleAppointment({
+    /* await this.appointmentService.scheduleAppointment({
       appointmentId: 'aeec5c33-ecfd-4627-b3ab-96fd62d86753',
-    });
+    });*/
+    /*
+    try {
+      await this.commissionService.createCommission(
+        '503f1675-4dae-4cc5-9a27-c5cfa1a38cc9',
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    */
+
+    try {
+      await this.paymentService.successPayment(
+        'e85d4045-1823-4528-9e8e-7f9b93c2fc40',
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

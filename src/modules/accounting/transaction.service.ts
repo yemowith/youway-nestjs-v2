@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/clients/prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TRANSACTION_EVENTS } from 'src/events/transaction/transaction.events';
+import { AccountingService } from './accounting.service';
 
 @Injectable()
 export class TransactionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly accountingService: AccountingService,
   ) {}
 
   async create(data: {
@@ -19,7 +21,7 @@ export class TransactionService {
     referenceType?: string;
     description?: string;
   }) {
-    return await this.prisma.$transaction(async (tx) => {
+    const transaction = await this.prisma.$transaction(async (tx) => {
       const transaction = await tx.transaction.create({
         data: {
           userId: data.userId,
@@ -31,19 +33,10 @@ export class TransactionService {
           description: data.description,
         },
       });
-
-      // Emit transaction created event
-      await this.eventEmitter.emitAsync(TRANSACTION_EVENTS.CREATED, {
-        transactionId: transaction.id,
-        userId: transaction.userId,
-        currencyCode: transaction.currencyCode,
-        type: transaction.type,
-        amount: transaction.amount.toNumber(),
-        timestamp: new Date(),
-      });
-
       return transaction;
     });
+    await this.accountingService.recalculateUserBalances(data.userId);
+    return transaction;
   }
 
   async update(
@@ -56,7 +49,7 @@ export class TransactionService {
       description?: string;
     },
   ) {
-    return await this.prisma.$transaction(async (tx) => {
+    const transaction = await this.prisma.$transaction(async (tx) => {
       const existing = await tx.transaction.findUnique({
         where: { id },
       });
@@ -70,22 +63,15 @@ export class TransactionService {
         data,
       });
 
-      // Emit transaction updated event
-      await this.eventEmitter.emitAsync(TRANSACTION_EVENTS.UPDATED, {
-        transactionId: transaction.id,
-        userId: transaction.userId,
-        currencyCode: transaction.currencyCode,
-        type: transaction.type,
-        amount: transaction.amount.toNumber(),
-        timestamp: new Date(),
-      });
-
       return transaction;
     });
+
+    await this.accountingService.recalculateUserBalances(transaction.userId);
+    return transaction;
   }
 
   async delete(id: string) {
-    return await this.prisma.$transaction(async (tx) => {
+    const transaction = await this.prisma.$transaction(async (tx) => {
       const existing = await tx.transaction.findUnique({
         where: { id },
       });
@@ -98,16 +84,10 @@ export class TransactionService {
         where: { id },
       });
 
-      // Emit transaction deleted event
-      await this.eventEmitter.emitAsync(TRANSACTION_EVENTS.DELETED, {
-        transactionId: id,
-        userId: existing.userId,
-        currencyCode: existing.currencyCode,
-        timestamp: new Date(),
-      });
-
-      return { success: true };
+      return existing;
     });
+
+    await this.accountingService.recalculateUserBalances(transaction.userId);
   }
 
   async findMany(userId: string, currencyCode?: string) {

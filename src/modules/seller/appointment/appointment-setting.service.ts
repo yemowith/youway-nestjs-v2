@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AppointmentStatus } from '@prisma/client';
+import { AppointmentStatus, SellerSetting } from '@prisma/client';
 import { PrismaService } from 'src/clients/prisma/prisma.service';
 import { LocationService } from 'src/modules/user/location/location.service';
 import { DatetimeService } from 'src/helpers/datetime/datetime.service';
@@ -24,5 +24,23 @@ export class AppointmentSettingService {
     }
 
     return setting;
+  }
+
+  async updateSetting(
+    sellerId: string,
+    settings: {
+      isActive: boolean;
+      maxDailyAppointments: number;
+      durationBetweenAppointments: number;
+    },
+  ) {
+    return this.prisma.sellerSetting.upsert({
+      where: { sellerId: sellerId },
+      create: {
+        sellerId: sellerId,
+        ...settings,
+      },
+      update: settings,
+    });
   }
 }

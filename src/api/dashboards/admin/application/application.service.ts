@@ -17,6 +17,13 @@ export class ApplicationService {
     private readonly supabaseService: SupabaseService,
   ) {}
 
+  private transformApplication(application: any): ApplicationResponse {
+    return {
+      ...application,
+      highLevelLicenseName: application.highLevelLicenseName || undefined,
+    };
+  }
+
   async findAll(
     page = 1,
     pageSize = 10,
@@ -38,7 +45,6 @@ export class ApplicationService {
             { email: { contains: search } },
             { phone: { contains: search } },
             { licenseName: { contains: search } },
-            { areaExpertise: { contains: search } },
           ],
         }
       : undefined;
@@ -52,7 +58,6 @@ export class ApplicationService {
         'phone',
         'licenseName',
         'highLevelLicense',
-        'areaExpertise',
         'createdAt',
         'updatedAt',
       ];
@@ -67,12 +72,24 @@ export class ApplicationService {
         take: pageSize,
         where,
         orderBy,
+        include: {
+          therapies: {
+            include: {
+              therapy: true,
+            },
+          },
+          therapySchools: {
+            include: {
+              therapySchool: true,
+            },
+          },
+        },
       }),
       this.prisma.application.count({ where }),
     ]);
 
     return {
-      rows: data,
+      rows: data.map((app) => this.transformApplication(app)),
       total,
       pageSize,
       page,
@@ -80,9 +97,23 @@ export class ApplicationService {
   }
 
   async findOne(id: string): Promise<ApplicationResponse> {
-    const app = await this.prisma.application.findUnique({ where: { id } });
+    const app = await this.prisma.application.findUnique({
+      where: { id },
+      include: {
+        therapies: {
+          include: {
+            therapy: true,
+          },
+        },
+        therapySchools: {
+          include: {
+            therapySchool: true,
+          },
+        },
+      },
+    });
     if (!app) throw new NotFoundException('Application not found');
-    return app;
+    return this.transformApplication(app);
   }
 
   async create(
@@ -112,13 +143,67 @@ export class ApplicationService {
         .getPublicUrl(filePath);
       cvUrl = publicUrl;
     }
-    return this.prisma.application.create({
+    // Parse JSON strings for therapies and therapy schools
+    let therapyIds: string[] = [];
+    let therapySchoolIds: string[] = [];
+
+    if (data.therapies) {
+      try {
+        therapyIds = JSON.parse(data.therapies);
+      } catch (error) {
+        throw new BadRequestException('Invalid therapies format');
+      }
+    }
+
+    if (data.therapySchools) {
+      try {
+        therapySchoolIds = JSON.parse(data.therapySchools);
+      } catch (error) {
+        throw new BadRequestException('Invalid therapy schools format');
+      }
+    }
+
+    const application = await this.prisma.application.create({
       data: {
-        ...data,
+        firstName: data.firstName.trim(),
+        lastName: data.lastName.trim(),
+        email: data.email.toLowerCase().trim(),
+        phone: data.phone.trim(),
+        licenseName: data.licenseName.trim(),
         highLevelLicense: String(data.highLevelLicense) === 'true',
+        highLevelLicenseName: data.highLevelLicenseName?.trim() || null,
         cvUrl: cvUrl ?? '',
+        therapies:
+          therapyIds.length > 0
+            ? {
+                create: therapyIds.map((therapyId) => ({
+                  therapyId: therapyId.trim(),
+                })),
+              }
+            : undefined,
+        therapySchools:
+          therapySchoolIds.length > 0
+            ? {
+                create: therapySchoolIds.map((therapySchoolId) => ({
+                  therapySchoolId: therapySchoolId.trim(),
+                })),
+              }
+            : undefined,
+      },
+      include: {
+        therapies: {
+          include: {
+            therapy: true,
+          },
+        },
+        therapySchools: {
+          include: {
+            therapySchool: true,
+          },
+        },
       },
     });
+    return this.transformApplication(application);
   }
 
   async update(
@@ -153,17 +238,94 @@ export class ApplicationService {
         .getPublicUrl(filePath);
       cvUrl = publicUrl;
     }
-    return this.prisma.application.update({
+    // Parse JSON strings for therapies and therapy schools
+    let therapyIds: string[] = [];
+    let therapySchoolIds: string[] = [];
+
+    if (data.therapies) {
+      try {
+        therapyIds = JSON.parse(data.therapies);
+      } catch (error) {
+        throw new BadRequestException('Invalid therapies format');
+      }
+    }
+
+    if (data.therapySchools) {
+      try {
+        therapySchoolIds = JSON.parse(data.therapySchools);
+      } catch (error) {
+        throw new BadRequestException('Invalid therapy schools format');
+      }
+    }
+
+    // Delete existing relationships and create new ones
+    await this.prisma.applicationTherapy.deleteMany({
+      where: { applicationId: id },
+    });
+    await this.prisma.applicationTherapySchool.deleteMany({
+      where: { applicationId: id },
+    });
+
+    const application = await this.prisma.application.update({
       where: { id },
       data: {
-        ...data,
+        firstName: data.firstName.trim(),
+        lastName: data.lastName.trim(),
+        email: data.email.toLowerCase().trim(),
+        phone: data.phone.trim(),
+        licenseName: data.licenseName.trim(),
         highLevelLicense: String(data.highLevelLicense) === 'true',
+        highLevelLicenseName: data.highLevelLicenseName?.trim() || null,
         cvUrl,
+        therapies:
+          therapyIds.length > 0
+            ? {
+                create: therapyIds.map((therapyId) => ({
+                  therapyId: therapyId.trim(),
+                })),
+              }
+            : undefined,
+        therapySchools:
+          therapySchoolIds.length > 0
+            ? {
+                create: therapySchoolIds.map((therapySchoolId) => ({
+                  therapySchoolId: therapySchoolId.trim(),
+                })),
+              }
+            : undefined,
+      },
+      include: {
+        therapies: {
+          include: {
+            therapy: true,
+          },
+        },
+        therapySchools: {
+          include: {
+            therapySchool: true,
+          },
+        },
       },
     });
+    return this.transformApplication(application);
   }
 
   async delete(id: string): Promise<ApplicationResponse> {
-    return this.prisma.application.delete({ where: { id } });
+    const application = await this.prisma.application.delete({
+      where: { id },
+      include: {
+        therapies: {
+          include: {
+            therapy: true,
+          },
+        },
+        therapySchools: {
+          include: {
+            therapySchool: true,
+          },
+        },
+      },
+    });
+    return this.transformApplication(application);
   }
 }

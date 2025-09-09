@@ -20,6 +20,12 @@ export class UserDto {
     example: 'Doe',
   })
   lastName: string;
+
+  @ApiProperty({
+    description: 'Seller profile image',
+    example: 'https://example.com/profile.jpg',
+  })
+  profileImage?: string;
 }
 
 export class SellerDto {

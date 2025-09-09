@@ -7,9 +7,16 @@ import { NotifyUserModule } from 'src/providers/notify-user/notify-user.module';
 import { MailModule } from 'src/providers/mail/mail.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { PrismaModule } from 'src/clients/prisma/prisma.module';
+import { AccountingModule } from 'src/modules/accounting/accounting.module';
 
 @Module({
-  imports: [NotifyUserModule, MailModule, UserModule, PrismaModule],
+  imports: [
+    NotifyUserModule,
+    MailModule,
+    UserModule,
+    PrismaModule,
+    AccountingModule,
+  ],
   providers: [
     UserEventsListener,
     ReferralEventsListener,

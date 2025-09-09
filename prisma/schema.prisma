@@ -250,6 +250,17 @@ model Therapy {
   createdAt      DateTime               @default(now()) @db.Timestamp(6)
   updatedAt      DateTime               @default(now()) @db.Timestamp(6)
   sellerProfiles SellerProfileTherapy[]
+  applications   ApplicationTherapy[]
+}
+
+model TherapySchool {
+  id             String                       @id @default(uuid()) @db.Uuid
+  name           String                       @db.VarChar(255)
+  description    String?                      @db.Text
+  createdAt      DateTime                     @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime                     @default(now()) @db.Timestamp(6)
+  sellerProfiles SellerProfileTherapySchool[]
+  applications   ApplicationTherapySchool[]
 }
 
 model SellerProfileTherapy {
@@ -263,15 +274,6 @@ model SellerProfileTherapy {
   @@unique([sellerProfileId, therapyId])
   @@index([sellerProfileId])
   @@index([therapyId])
-}
-
-model TherapySchool {
-  id             String                       @id @default(uuid()) @db.Uuid
-  name           String                       @db.VarChar(255)
-  description    String?                      @db.Text
-  createdAt      DateTime                     @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime                     @default(now()) @db.Timestamp(6)
-  sellerProfiles SellerProfileTherapySchool[]
 }
 
 model SellerProfileTherapySchool {
@@ -464,6 +466,8 @@ model Currency {
   packagePrices  PackagePrice[]
   sellerPackages SellerPackage[]
 
+  commissions Commission[]
+
   @@index([code])
   @@index([name])
   @@index([isoCode])
@@ -537,9 +541,19 @@ model Commission {
   userId String @db.Uuid
   user   User   @relation(fields: [userId], references: [id])
 
+  currencyCode String   @default("TRY") @db.VarChar(3)
+  currency     Currency @relation(fields: [currencyCode], references: [code])
+
+  appointmentId String      @db.Uuid
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  percent Decimal @db.Decimal(10, 6)
+
   amount    Decimal  @db.Decimal(15, 6)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([userId, appointmentId])
 }
 
 model Country {
@@ -649,9 +663,9 @@ model Application {
   email     String @db.VarChar(255)
   phone     String @db.VarChar(20)
 
-  licenseName      String  @db.VarChar(20)
-  highLevelLicense Boolean @default(false)
-  areaExpertise    String  @db.VarChar(255)
+  licenseName          String  @db.VarChar(20)
+  highLevelLicense     Boolean @default(false)
+  highLevelLicenseName String? @db.VarChar(20)
 
   cvUrl String @db.VarChar(255)
 
@@ -659,6 +673,35 @@ model Application {
   updatedAt DateTime @updatedAt
 
   // Relations
+  therapies      ApplicationTherapy[]
+  therapySchools ApplicationTherapySchool[]
+}
+
+model ApplicationTherapy {
+  id            String @id @default(uuid()) @db.Uuid
+  applicationId String @db.Uuid
+  therapyId     String @db.Uuid
+
+  // Relations
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  therapy     Therapy     @relation(fields: [therapyId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, therapyId])
+  @@index([applicationId])
+  @@index([therapyId])
+}
+
+model ApplicationTherapySchool {
+  id              String @id @default(uuid()) @db.Uuid
+  applicationId   String @db.Uuid
+  therapySchoolId String @db.Uuid
+
+  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  therapySchool TherapySchool @relation(fields: [therapySchoolId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, therapySchoolId])
+  @@index([applicationId])
+  @@index([therapySchoolId])
 }
 
 model PageCategory {
@@ -751,16 +794,6 @@ model Package {
   prices PackagePrice[]
 }
 
-model Setting {
-  id        String   @id @default(uuid()) @db.Uuid
-  key       String   @unique @db.VarChar(255)
-  value     String   @db.Text
-  group     String   @default("general") @db.VarChar(255)
-  type      String   @default("text") @db.VarChar(50)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @default(now()) @db.Timestamp(6)
-}
-
 model PackagePrice {
   id        String  @id @default(uuid()) @db.Uuid
   packageId String  @db.Uuid
@@ -780,17 +813,29 @@ model PackagePrice {
   @@unique([packageId, currencyCode])
 }
 
+model Setting {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique @db.VarChar(255)
+  value     String   @db.Text
+  group     String   @default("general") @db.VarChar(255)
+  type      String   @default("text") @db.VarChar(50)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+}
+
 model SellerPackage {
-  id           String   @id @default(uuid()) @db.Uuid
-  sellerId     String   @db.Uuid
-  seller       User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  packageId    String   @db.Uuid
-  package      Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
-  price        Decimal  @db.Decimal(10, 6)
-  currencyCode String   @default("TRY") @db.VarChar(3)
-  currency     Currency @relation(fields: [currencyCode], references: [code])
-  createdAt    DateTime @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime @updatedAt
+  id           String  @id @default(uuid()) @db.Uuid
+  sellerId     String  @db.Uuid
+  seller       User    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  packageId    String  @db.Uuid
+  package      Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  price        Decimal @db.Decimal(10, 6)
+  currencyCode String  @default("TRY") @db.VarChar(3)
+  isActive     Boolean @default(true)
+
+  currency  Currency @relation(fields: [currencyCode], references: [code])
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
 
   @@unique([sellerId, packageId])
 }
@@ -819,6 +864,9 @@ model Appointment {
   status    AppointmentStatus @default(SCHEDULED)
 
   createdAt DateTime @default(now())
+
+  // Relations
+  commissions Commission[]
 }
 
 model DefaultAvailability {

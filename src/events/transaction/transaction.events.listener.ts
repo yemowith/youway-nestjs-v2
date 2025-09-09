@@ -7,12 +7,16 @@ import {
   TransactionDeletedEvent,
   TRANSACTION_EVENTS,
 } from './transaction.events';
+import { AccountingService } from 'src/modules/accounting/accounting.service';
 
 @Injectable()
 export class TransactionEventsListener {
   private readonly logger = new Logger(TransactionEventsListener.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly accountingService: AccountingService,
+  ) {}
 
   @OnEvent(TRANSACTION_EVENTS.CREATED)
   async handleTransactionCreatedEvent(payload: TransactionCreatedEvent) {
@@ -43,56 +47,7 @@ export class TransactionEventsListener {
 
   private async updateBalance(userId: string, currencyCode: string) {
     try {
-      // Calculate new balance using SQL aggregation
-      const result = await this.prisma.$queryRaw<Array<{ balance: number }>>`
-        SELECT 
-          COALESCE(
-            SUM(
-              CASE 
-                WHEN type = 'IN' THEN amount 
-                WHEN type = 'OUT' THEN -amount 
-                ELSE 0 
-              END
-            ), 0
-          ) as balance
-        FROM "Transaction" 
-        WHERE "userId" = ${userId}::uuid 
-          AND "currencyCode" = ${currencyCode}
-      `;
-
-      const newBalance = result[0].balance;
-
-      // Find existing balance record
-      const existingBalance = await this.prisma.balance.findFirst({
-        where: {
-          userId,
-          currencyCode,
-        },
-      });
-
-      if (existingBalance) {
-        // Update existing balance
-        await this.prisma.balance.update({
-          where: { id: existingBalance.id },
-          data: {
-            balance: newBalance,
-            updatedAt: new Date(),
-          },
-        });
-      } else {
-        // Create new balance record
-        await this.prisma.balance.create({
-          data: {
-            userId,
-            currencyCode,
-            balance: newBalance,
-          },
-        });
-      }
-
-      this.logger.log(
-        `Balance updated for user ${userId} (${currencyCode}): ${newBalance}`,
-      );
+      await this.accountingService.recalculateUserBalances(userId);
     } catch (error) {
       this.logger.error(
         `Failed to update balance for user ${userId} (${currencyCode}): ${error.message}`,

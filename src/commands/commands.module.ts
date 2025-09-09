@@ -13,6 +13,11 @@ import { LocationModule } from 'src/modules/user/location/location.module';
 import { AppointmentModule } from 'src/modules/seller/appointment/appointment.module';
 import { PackagesModule } from 'src/modules/seller/packages/packages.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CommissionModule } from 'src/modules/accounting/commission/commission.module';
+import { AccountingModule } from 'src/modules/accounting/accounting.module';
+import { PaymentModule } from 'src/api/app/payment/payment.module';
+import { JwtModule } from '@nestjs/jwt';
+import { FakeDbCommand } from './fake/fake.db.command';
 
 @Module({
   providers: [
@@ -20,6 +25,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ImportDbCommand,
     SeedSettingsCommand,
     AppointmentsCommand,
+    FakeDbCommand,
   ],
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
@@ -31,6 +37,14 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     LocationModule,
     AppointmentModule,
     PackagesModule,
+    CommissionModule,
+    AccountingModule,
+    PaymentModule,
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
 })
 export class CommandsModule {}

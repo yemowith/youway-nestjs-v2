@@ -34,6 +34,7 @@ export class PackagesService {
     const packages = await this.prisma.sellerPackage.findMany({
       where: {
         sellerId: sellerId,
+        isActive: true,
       },
       select: {
         package: {
@@ -69,9 +70,14 @@ export class PackagesService {
     const packageData = await this.prisma.sellerPackage.findUnique({
       where: {
         sellerId_packageId: { packageId: packageId, sellerId: sellerId },
+        isActive: true,
       },
       include: {
-        package: true,
+        package: {
+          include: {
+            prices: true,
+          },
+        },
         currency: true,
       },
     });
