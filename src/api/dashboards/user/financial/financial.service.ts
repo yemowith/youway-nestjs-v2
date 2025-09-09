@@ -3,6 +3,7 @@ import { PrismaService } from 'src/clients/prisma/prisma.service';
 import { AccountingService } from 'src/modules/accounting/accounting.service';
 import { LocationService } from 'src/modules/user/location/location.service';
 import { UserPaymentsResponseDto } from './dto/user-payments.dto';
+import { UserTransactionsResponseDto } from './dto/user-transactions.dto';
 
 @Injectable()
 export class FinancialService {
@@ -137,6 +138,71 @@ export class FinancialService {
 
     return {
       payments: transformedPayments,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+      },
+    };
+  }
+
+  async getTransactions(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<UserTransactionsResponseDto> {
+    const location = await this.locationService.getLocation(userId);
+    const currencyCode = location.country?.currency?.code || 'TRY';
+
+    // Calculate offset for pagination
+    const offset = (page - 1) * limit;
+
+    // Get total count of transactions
+    const totalCount = await this.prisma.transaction.count({
+      where: {
+        userId,
+        currencyCode,
+      },
+    });
+
+    // Get paginated transactions
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        currencyCode,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip: offset,
+      take: limit,
+    });
+
+    // Transform transactions to match DTO structure
+    const transformedTransactions = transactions.map((transaction) => ({
+      id: transaction.id,
+      userId: transaction.userId,
+      amount: transaction.amount.toNumber(),
+      balance: transaction.balance.toNumber(),
+      type: transaction.type,
+      referenceId: transaction.referenceId,
+      referenceType: transaction.referenceType,
+      description: transaction.description,
+      currencyCode: transaction.currencyCode,
+      createdAt: transaction.createdAt,
+      updatedAt: transaction.updatedAt,
+    }));
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
+
+    return {
+      transactions: transformedTransactions,
       pagination: {
         page,
         limit,

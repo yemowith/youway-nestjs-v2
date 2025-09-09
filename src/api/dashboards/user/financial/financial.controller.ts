@@ -9,6 +9,7 @@ import { JwtAuthGuard } from 'src/api/auth/guards/jwt-auth.guard';
 import { FinancialService } from './financial.service';
 import { FinancialSummaryDto } from './dto/financial-summary.dto';
 import { UserPaymentsResponseDto } from './dto/user-payments.dto';
+import { UserTransactionsResponseDto } from './dto/user-transactions.dto';
 
 @ApiTags('Financial')
 @Controller('dashboards/user/financial')
@@ -57,6 +58,40 @@ export class FinancialController {
     const validPage = Math.max(1, pageNumber);
     const validLimit = Math.min(Math.max(1, limitNumber), 100); // Max 100 items per page
 
-    return this.financialService.getPayments(req.user.id, validPage, validLimit);
+    return this.financialService.getPayments(
+      req.user.id,
+      validPage,
+      validLimit,
+    );
+  }
+
+  @Get('transactions')
+  @ApiOperation({ summary: 'Get paginated user transactions' })
+  @ApiResponse({
+    status: 200,
+    description: 'User transactions retrieved successfully',
+    type: UserTransactionsResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async getTransactions(
+    @Request() req: { user: { id: string } },
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<UserTransactionsResponseDto> {
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    const limitNumber = limit ? parseInt(limit, 10) : 10;
+
+    // Validate pagination parameters
+    const validPage = Math.max(1, pageNumber);
+    const validLimit = Math.min(Math.max(1, limitNumber), 100); // Max 100 items per page
+
+    return this.financialService.getTransactions(
+      req.user.id,
+      validPage,
+      validLimit,
+    );
   }
 }
