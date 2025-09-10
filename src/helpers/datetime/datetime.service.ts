@@ -181,4 +181,10 @@ export class DatetimeService {
 
     return { startTimeUTC, endTimeUTC };
   }
+
+  getNowPlusMinutes(minutes: number): string {
+    const now = new Date();
+    const plus10Minutes = new Date(now.getTime() + minutes * 60 * 1000); // Add 10 minutes in milliseconds
+    return plus10Minutes.toISOString();
+  }
 }

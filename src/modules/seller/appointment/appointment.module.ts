@@ -7,6 +7,8 @@ import { AvailabilityModule } from '../availability/availability.module';
 import { EventsModule } from 'src/events/events.module';
 import { PackagesModule } from '../packages/packages.module';
 import { AvatarsModule } from 'src/api/dashboards/user/profiles/avatars/avatars.module';
+import { CronModule } from './cron/cron.module';
+import { ProcessAppointmentsModule } from './process-appointments/process-appointments.module';
 
 @Global()
 @Module({
@@ -19,6 +21,8 @@ import { AvatarsModule } from 'src/api/dashboards/user/profiles/avatars/avatars.
     EventsModule,
     PackagesModule,
     AvatarsModule,
+    CronModule,
+    ProcessAppointmentsModule,
   ],
 })
 export class AppointmentModule {}

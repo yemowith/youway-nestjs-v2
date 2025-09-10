@@ -4,9 +4,10 @@ import { DashboardsModule } from './dashboards/dashboards.module';
 import { AppModule } from './app/app.module';
 import { CmsModule } from './cms/cms.module';
 import { ApplicationModule } from './application/application.module';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
-  imports: [AuthModule, DashboardsModule, AppModule, CmsModule, ApplicationModule],
+  imports: [AuthModule, DashboardsModule, AppModule, CmsModule, ApplicationModule, RoomsModule],
   exports: [],
 })
 export class ApiModule {}

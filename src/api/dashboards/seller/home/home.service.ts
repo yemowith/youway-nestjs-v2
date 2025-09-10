@@ -122,6 +122,7 @@ export class HomeService {
     }
 
     const latestAppointment = await this.getLatestAppointment(sellerId);
+
     const statistics = await this.getStatistics(sellerId);
 
     const ratingStats = await this.ratingService.getSellerRatingStats(

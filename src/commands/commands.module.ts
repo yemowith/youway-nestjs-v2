@@ -19,6 +19,12 @@ import { PaymentModule } from 'src/api/app/payment/payment.module';
 import { JwtModule } from '@nestjs/jwt';
 import { FakeDbCommand } from './fake/fake.db.command';
 
+import { NotifyUserModule } from 'src/providers/notify-user/notify-user.module';
+import { UserModule } from 'src/modules/user/user.module';
+import { ProcessAppointmentsModule } from 'src/modules/seller/appointment/process-appointments/process-appointments.module';
+import { RoomsModule } from 'src/modules/rooms/rooms.module';
+import { TwilioModule } from 'src/clients/twilio/twilio.module';
+
 @Module({
   providers: [
     TesterCommand,
@@ -45,6 +51,11 @@ import { FakeDbCommand } from './fake/fake.db.command';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
+    NotifyUserModule,
+    UserModule,
+    ProcessAppointmentsModule,
+    RoomsModule,
+    TwilioModule,
   ],
 })
 export class CommandsModule {}

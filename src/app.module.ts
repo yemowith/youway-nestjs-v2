@@ -9,12 +9,12 @@ import { ModulesModule } from './modules/modules.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 import { HelpersModule } from './helpers/helpers.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ClientsModule,
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
-
     ModulesModule,
     EventEmitterModule.forRoot(),
     JwtModule.register({
@@ -24,6 +24,7 @@ import { HelpersModule } from './helpers/helpers.module';
     }),
     HelpersModule,
     ApiModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

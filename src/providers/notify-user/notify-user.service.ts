@@ -31,4 +31,12 @@ export class NotifyUserService {
       }),
     );
   }
+
+  async notifyUserByPhone(phone: string, message: string) {
+    await this.smsService.sendNotification(phone, message);
+  }
+
+  async notifyUserByEmail(email: string, subject: string, message: string) {
+    await this.mailService.sendNotification(email, subject, message);
+  }
 }

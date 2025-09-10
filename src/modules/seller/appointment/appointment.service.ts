@@ -374,7 +374,9 @@ export class AppointmentService {
     const appointment = await this.prisma.appointment.findFirst({
       where: {
         ...whereClause,
-        status: AppointmentStatus.SCHEDULED,
+        status: {
+          in: [AppointmentStatus.SCHEDULED, AppointmentStatus.STARTED],
+        },
         AND: {
           endTime: {
             gt: now,

@@ -5,6 +5,7 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module'
 import { ChatModule } from './chat/chat.module'
 import { UserModule } from './user/user.module'
 import { SellerModule } from './seller/seller.module';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SellerModule } from './seller/seller.module';
     ChatModule,
     UserModule,
     SellerModule,
+    RoomsModule,
   ],
   exports: [AccountingModule, UserModule],
 })

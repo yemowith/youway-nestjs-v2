@@ -77,5 +77,11 @@ export default () => ({
     password: process.env.REDIS_PASSWORD || undefined,
     db: parseInt(process.env.REDIS_DB || '0', 10),
   },
+  twilio: {
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
+    apiKey: process.env.TWILIO_KEYSID,
+    apiSecret: process.env.TWILIO_KEYSECRET,
+  },
   messages,
 });

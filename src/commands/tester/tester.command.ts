@@ -8,6 +8,9 @@ import { AppointmentService } from 'src/modules/seller/appointment/appointment.s
 import { CommissionService } from 'src/modules/accounting/commission/commission.service';
 import { AccountingService } from 'src/modules/accounting/accounting.service';
 import { PaymentService } from 'src/api/app/payment/payment.service';
+import { ProcessAppointmentsService } from 'src/modules/seller/appointment/process-appointments/process-appointments.service';
+import { RoomsService } from 'src/modules/rooms/rooms.service';
+import { TwilioService } from 'src/clients/twilio/twilio.service';
 
 @Injectable()
 @Command({
@@ -28,6 +31,9 @@ export class TesterCommand extends CommandRunner {
     private readonly commissionService: CommissionService,
     private readonly accountingService: AccountingService,
     private readonly paymentService: PaymentService,
+    private readonly processAppointmentsService: ProcessAppointmentsService,
+    private readonly roomsService: RoomsService,
+    private readonly twilio: TwilioService,
   ) {
     super();
   }
@@ -139,27 +145,33 @@ export class TesterCommand extends CommandRunner {
     }
   }
 
-  async run(): Promise<void> {
-    // await this.makeTestAppointment();
-    // const availableSlots = await this.getAvailableSellers();
+  async testProcessAppointments() {
+    await this.processAppointmentsService.checkUpComingAppointments();
+  }
 
-    /* await this.appointmentService.scheduleAppointment({
-      appointmentId: 'aeec5c33-ecfd-4627-b3ab-96fd62d86753',
-    });*/
-    /*
-    try {
-      await this.commissionService.createCommission(
-        '503f1675-4dae-4cc5-9a27-c5cfa1a38cc9',
-      );
-    } catch (error) {
-      console.log(error);
+  async testRooms(appointmentId: string) {
+    const appointment = await this.prisma.appointment.findUnique({
+      where: {
+        id: appointmentId,
+      },
+    });
+    if (!appointment) {
+      throw new Error('Appointment not found');
     }
-    */
 
+    await this.roomsService.generateVideoToken(
+      appointmentId,
+      appointment.userId,
+    );
+  }
+
+  async run(): Promise<void> {
     try {
-      await this.paymentService.successPayment(
-        'e85d4045-1823-4528-9e8e-7f9b93c2fc40',
-      );
+      //await this.testProcessAppointments();
+      //  await this.testRooms('5338812b-64b4-41a3-9f91-9346b7a959e9');
+
+      const keys = await this.twilio.generateKeySid();
+      console.log(keys);
     } catch (error) {
       console.log(error);
     }
