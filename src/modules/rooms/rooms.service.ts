@@ -6,27 +6,24 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/clients/prisma/prisma.service';
 import { RedisdbService } from 'src/clients/redisdb/redisdb.service';
-import { TwilioService } from 'src/clients/twilio/twilio.service';
 import { DatetimeService } from 'src/helpers/datetime/datetime.service';
+import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RoomsService {
   private readonly logger = new Logger(RoomsService.name);
   private readonly prefix = 'room:';
+  private readonly dailyApiUrl = 'https://api.daily.co/v1';
+  private readonly dailyApiKey: string;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly datetime: DatetimeService,
     private readonly redisdb: RedisdbService,
-    private readonly twilio: TwilioService,
-  ) {}
-
-  private async checkRoomCreation(appointmentId: string) {
-    const room = await this.redisdb.get(`${this.prefix}${appointmentId}`);
-    if (room) {
-      return true;
-    }
-    return false;
+    private readonly config: ConfigService,
+  ) {
+    this.dailyApiKey = config.get('daily.apiKey') || '';
   }
 
   private async checkHealthAppointment(appointmentId: string) {
@@ -57,178 +54,177 @@ export class RoomsService {
     return appointment;
   }
 
-  async createRoom(appointmentId: string) {
-    const isRoomCreated = await this.checkRoomCreation(appointmentId);
-    if (isRoomCreated) {
-      this.logger.log(`Room already created for appointment ${appointmentId}`);
-      console.log(`Room already created for appointment ${appointmentId}`);
-      return;
-    }
+  private async createDailyRoom(roomName: string) {
+    try {
+      // Check if API key is configured
+      if (!this.dailyApiKey) {
+        this.logger.error('Daily.co API key is not configured');
+        throw new BadRequestException('Video service not configured');
+      }
 
-    const appointment = await this.checkHealthAppointment(appointmentId);
+      this.logger.log(`Creating Daily.co room: ${roomName}`);
 
-    const room = await this.redisdb.setnx(`${this.prefix}${appointmentId}`, {
-      appointmentId,
-      sellerId: appointment.sellerId,
-      userId: appointment.userId,
-      isStarted: true,
-      createdAt: this.datetime.getNowISO(),
-    });
+      const response = await axios.post(
+        `${this.dailyApiUrl}/rooms`,
+        {
+          name: roomName,
+          privacy: 'private',
+          properties: {
+            max_participants: 2,
+            enable_screenshare: true,
+            enable_chat: true,
+            enable_knocking: false,
+            enable_recording: 'cloud',
+            enable_transcription: false,
+            exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.dailyApiKey}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
 
-    await this.twilio.createVideoRoom(`${this.prefix}${appointmentId}`, {
-      uniqueName: `room:${appointmentId}`,
-      maxParticipants: 2,
-      // to do
-      //   ttl: 3600,
-    });
-
-    this.logger.log(`Room created for appointment ${appointmentId}`);
-    console.log(`Room created for appointment ${appointmentId}`);
-
-    return room;
-  }
-
-  private async getRoomRedis(appointmentId: string) {
-    const room = await this.redisdb.get(`${this.prefix}${appointmentId}`);
-    if (!room) {
-      throw new NotFoundException('Room not found');
-    }
-    return room;
-  }
-
-  /**
-   * Calculate appointment duration in minutes
-   * @param startTime - Appointment start time
-   * @param endTime - Appointment end time
-   * @returns number - Duration in minutes
-   */
-  calculateAppointmentDuration(startTime: Date, endTime: Date): number {
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-
-    // Validate that end time is after start time
-    if (end <= start) {
-      throw new BadRequestException('End time must be after start time');
-    }
-
-    // Calculate difference in milliseconds
-    const diffInMs = end.getTime() - start.getTime();
-
-    // Convert to minutes
-    const diffInMinutes = Math.round(diffInMs / (1000 * 60));
-
-    return diffInMinutes;
-  }
-
-  /**
-   * Calculate appointment duration with different time units
-   * @param startTime - Appointment start time
-   * @param endTime - Appointment end time
-   * @param unit - Time unit ('minutes', 'hours', 'seconds')
-   * @returns number - Duration in specified unit
-   */
-  calculateAppointmentDurationInUnit(
-    startTime: Date,
-    endTime: Date,
-    unit: 'minutes' | 'hours' | 'seconds' = 'minutes',
-  ): number {
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-
-    // Validate that end time is after start time
-    if (end <= start) {
-      throw new BadRequestException('End time must be after start time');
-    }
-
-    // Calculate difference in milliseconds
-    const diffInMs = end.getTime() - start.getTime();
-
-    // Convert to specified unit
-    switch (unit) {
-      case 'seconds':
-        return Math.round(diffInMs / 1000);
-      case 'minutes':
-        return Math.round(diffInMs / (1000 * 60));
-      case 'hours':
-        return Math.round(diffInMs / (1000 * 60 * 60));
-      default:
-        return Math.round(diffInMs / (1000 * 60));
+      this.logger.log(`Daily.co room created successfully: ${roomName}`);
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to create Daily.co room:', {
+        roomName,
+        error: error.response?.data || error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+      });
+      throw new BadRequestException('Failed to create video room');
     }
   }
 
-  /**
-   * Get appointment duration as a formatted string
-   * @param startTime - Appointment start time
-   * @param endTime - Appointment end time
-   * @returns string - Formatted duration (e.g., "1h 30m", "45m", "2h 15m")
-   */
-  getFormattedAppointmentDuration(startTime: Date, endTime: Date): string {
-    const start = new Date(startTime);
-    const end = new Date(endTime);
+  private async getDailyRoom(roomName: string) {
+    try {
+      const response = await axios.get(
+        `${this.dailyApiUrl}/rooms/${roomName}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.dailyApiKey}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
 
-    // Validate that end time is after start time
-    if (end <= start) {
-      throw new BadRequestException('End time must be after start time');
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to get Daily.co room:', error);
+      throw new BadRequestException('Failed to get video room');
     }
+  }
 
-    // Calculate difference in milliseconds
-    const diffInMs = end.getTime() - start.getTime();
+  private setRoomName(appointmentId: string) {
+    return `room-a-${appointmentId}`;
+  }
 
-    // Convert to minutes
-    const totalMinutes = Math.round(diffInMs / (1000 * 60));
+  private async deleteDailyRoom(roomName: string) {
+    try {
+      await axios.delete(`${this.dailyApiUrl}/rooms/${roomName}`, {
+        headers: {
+          Authorization: `Bearer ${this.dailyApiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    // Calculate hours and remaining minutes
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-
-    // Format the duration
-    if (hours > 0 && minutes > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (hours > 0) {
-      return `${hours}h`;
-    } else {
-      return `${minutes}m`;
+      this.logger.log(`Deleted Daily.co room: ${roomName}`);
+    } catch (error) {
+      this.logger.error('Failed to delete Daily.co room:', error);
+      throw new BadRequestException('Failed to delete video room');
     }
   }
 
   async generateVideoToken(appointmentId: string, identity: string) {
-    await this.createRoom(appointmentId);
+    await this.checkHealthAppointment(appointmentId);
 
-    const room = await this.getRoomRedis(appointmentId);
+    const roomName = this.setRoomName(appointmentId);
 
-    const token = this.twilio.generateVideoToken(
+    let room;
+    try {
+      // Try to get existing room first
+      room = await this.getDailyRoom(roomName);
+      this.logger.log(`Using existing room: ${roomName}`);
+    } catch (error) {
+      // If room doesn't exist, create it
+      this.logger.log(`Room ${roomName} not found, creating new room`);
+      room = await this.createDailyRoom(roomName);
+    }
+
+    // Generate Daily.co meeting token
+    const meetingToken = await this.generateDailyMeetingToken(
+      roomName,
       identity,
-      `${this.prefix}${appointmentId}`,
     );
 
-    return token;
+    console.log('Room data:', room);
+
+    return {
+      token: meetingToken,
+      appointmentId,
+      identity,
+      roomName: roomName,
+      roomUrl: room.url,
+      expiresIn: 3600, // 1 hour
+    };
+  }
+
+  private async generateDailyMeetingToken(roomName: string, identity: string) {
+    try {
+      this.logger.log(
+        `Generating Daily.co meeting token for room: ${roomName}, user: ${identity}`,
+      );
+
+      const response = await axios.post(
+        `${this.dailyApiUrl}/meeting-tokens`,
+        {
+          properties: {
+            room_name: roomName,
+            user_id: identity,
+            is_owner: false,
+            exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.dailyApiKey}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      this.logger.log(`Daily.co meeting token generated successfully`);
+      return response.data.token;
+    } catch (error) {
+      this.logger.error('Failed to generate Daily.co meeting token:', {
+        roomName,
+        identity,
+        error: error.response?.data || error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+      });
+      throw new BadRequestException('Failed to generate video token');
+    }
   }
 
   /**
-   * Generate video token without caching
-   * @param appointmentId - Appointment ID
-   * @param identity - User identity
-   * @returns Promise<string> - Video token
+   * Get Daily.co room information
+   * @param roomName - Room name to get information for
+   * @returns Promise<object> - Room information
    */
-  async generateVideoTokenWithCache(
-    appointmentId: string,
-    identity: string,
-  ): Promise<string> {
-    await this.createRoom(appointmentId);
+  async getRoomInfo(roomName: string) {
+    return await this.getDailyRoom(roomName);
+  }
 
-    // Verify room exists
-    const room = await this.getRoomRedis(appointmentId);
-
-    // Generate new token
-    const token = this.twilio.generateVideoToken(
-      identity,
-      `${this.prefix}${appointmentId}`,
-    );
-
-    this.logger.log(
-      `Generated new video token for appointment ${appointmentId} and identity ${identity}`,
-    );
-
-    return token;
+  /**
+   * Delete Daily.co room
+   * @param roomName - Room name to delete
+   */
+  async deleteRoom(roomName: string) {
+    return await this.deleteDailyRoom(roomName);
   }
 }

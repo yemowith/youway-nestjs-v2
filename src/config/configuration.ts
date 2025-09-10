@@ -83,5 +83,8 @@ export default () => ({
     apiKey: process.env.TWILIO_KEYSID,
     apiSecret: process.env.TWILIO_KEYSECRET,
   },
+  daily: {
+    apiKey: process.env.DAILY_API_KEY,
+  },
   messages,
 });

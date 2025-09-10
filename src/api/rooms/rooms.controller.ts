@@ -71,7 +71,11 @@ export class RoomsController {
             },
             appointmentId: { type: 'string', example: 'appointment-123' },
             identity: { type: 'string', example: 'user-456' },
-            roomName: { type: 'string', example: 'room:appointment-123' },
+            roomName: { type: 'string', example: 'room-appointment-123' },
+            roomUrl: {
+              type: 'string',
+              example: 'https://youway.daily.co/room-appointment-123',
+            },
             expiresIn: { type: 'number', example: 3600 },
           },
         },
@@ -120,20 +124,14 @@ export class RoomsController {
 
     try {
       // Generate video token
-      const token = await this.roomsService.generateVideoTokenWithCache(
+      const token = await this.roomsService.generateVideoToken(
         appointmentId,
         identity,
       );
 
       return {
         success: true,
-        data: {
-          token,
-          appointmentId,
-          identity,
-          roomName: `room:${appointmentId}`,
-          expiresIn: 3600, // Default 1 hour
-        },
+        data: token, // The service now returns the full token object with roomUrl
       };
     } catch (error) {
       if (
