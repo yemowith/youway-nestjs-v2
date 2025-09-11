@@ -70,12 +70,20 @@ export class RoomsService {
           name: roomName,
           privacy: 'private',
           properties: {
+            enable_prejoin_ui: false,
             max_participants: 2,
-            enable_screenshare: true,
+            enable_screenshare: false,
             enable_chat: true,
             enable_knocking: false,
-            enable_recording: 'cloud',
-            enable_transcription: false,
+            enable_recording: false,
+            enable_transcription: true,
+            enable_people_ui: false,
+            enable_network_ui: false,
+            enable_emoji_reactions: true,
+            enable_live_captions_ui: true,
+            enable_noise_cancellation_ui: true,
+            enable_video_processing_ui: true,
+            enable_advanced_chat: true,
             exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
           },
         },
@@ -120,7 +128,8 @@ export class RoomsService {
   }
 
   private setRoomName(appointmentId: string) {
-    return `room-a-${appointmentId}`;
+    const randomString = Math.random().toString(36).substring(2, 15);
+    return `room-seans-${appointmentId}`;
   }
 
   private async deleteDailyRoom(roomName: string) {

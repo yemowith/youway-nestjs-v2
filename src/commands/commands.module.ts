@@ -23,7 +23,6 @@ import { NotifyUserModule } from 'src/providers/notify-user/notify-user.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { ProcessAppointmentsModule } from 'src/modules/seller/appointment/process-appointments/process-appointments.module';
 import { RoomsModule } from 'src/modules/rooms/rooms.module';
-import { TwilioModule } from 'src/clients/twilio/twilio.module';
 
 @Module({
   providers: [
@@ -55,7 +54,6 @@ import { TwilioModule } from 'src/clients/twilio/twilio.module';
     UserModule,
     ProcessAppointmentsModule,
     RoomsModule,
-    TwilioModule,
   ],
 })
 export class CommandsModule {}

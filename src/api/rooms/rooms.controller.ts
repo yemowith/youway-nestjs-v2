@@ -22,6 +22,25 @@ class GenerateVideoTokenDto {
   ttl?: number;
 }
 
+class VideoTokenDataDto {
+  token: string;
+  appointmentId: string;
+  identity: string;
+  roomName: string;
+  roomUrl: string;
+  expiresIn: number;
+}
+
+class VideoTokenResponseDto {
+  success: boolean;
+  data: VideoTokenDataDto;
+}
+
+class ErrorResponseDto {
+  success: boolean;
+  message: string;
+}
+
 @ApiTags('Rooms')
 @Controller('rooms')
 @UseGuards(JwtAuthGuard)
@@ -58,51 +77,17 @@ export class RoomsController {
   @ApiResponse({
     status: 200,
     description: 'Video token generated successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean', example: true },
-        data: {
-          type: 'object',
-          properties: {
-            token: {
-              type: 'string',
-              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-            },
-            appointmentId: { type: 'string', example: 'appointment-123' },
-            identity: { type: 'string', example: 'user-456' },
-            roomName: { type: 'string', example: 'room-appointment-123' },
-            roomUrl: {
-              type: 'string',
-              example: 'https://youway.daily.co/room-appointment-123',
-            },
-            expiresIn: { type: 'number', example: 3600 },
-          },
-        },
-      },
-    },
+    type: VideoTokenResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Bad request - Invalid appointment or timing',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean', example: false },
-        message: { type: 'string', example: 'Appointment not started yet' },
-      },
-    },
+    type: ErrorResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'Not found - Appointment not found',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean', example: false },
-        message: { type: 'string', example: 'Appointment not found' },
-      },
-    },
+    type: ErrorResponseDto,
   })
   @ApiResponse({
     status: 401,

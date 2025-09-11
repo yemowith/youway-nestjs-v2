@@ -10,7 +10,6 @@ import { AccountingService } from 'src/modules/accounting/accounting.service';
 import { PaymentService } from 'src/api/app/payment/payment.service';
 import { ProcessAppointmentsService } from 'src/modules/seller/appointment/process-appointments/process-appointments.service';
 import { RoomsService } from 'src/modules/rooms/rooms.service';
-import { TwilioService } from 'src/clients/twilio/twilio.service';
 
 @Injectable()
 @Command({
@@ -33,7 +32,6 @@ export class TesterCommand extends CommandRunner {
     private readonly paymentService: PaymentService,
     private readonly processAppointmentsService: ProcessAppointmentsService,
     private readonly roomsService: RoomsService,
-    private readonly twilio: TwilioService,
   ) {
     super();
   }
@@ -169,9 +167,6 @@ export class TesterCommand extends CommandRunner {
     try {
       //await this.testProcessAppointments();
       //  await this.testRooms('5338812b-64b4-41a3-9f91-9346b7a959e9');
-
-      const keys = await this.twilio.generateKeySid();
-      console.log(keys);
     } catch (error) {
       console.log(error);
     }
