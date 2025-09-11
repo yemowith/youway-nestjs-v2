@@ -133,6 +133,7 @@ export class SellerService {
             id: true,
             firstName: true,
             lastName: true,
+            profileImage: true,
             status: true,
             about: true,
             identities: {
@@ -179,6 +180,7 @@ export class SellerService {
                 id: true,
                 firstName: true,
                 lastName: true,
+                profileImage: true,
               },
             },
           },
@@ -274,6 +276,7 @@ export class SellerService {
             id: true,
             firstName: true,
             lastName: true,
+            profileImage: true,
             status: true,
             about: true,
             identities: {
@@ -320,6 +323,7 @@ export class SellerService {
                 id: true,
                 firstName: true,
                 lastName: true,
+                profileImage: true,
               },
             },
           },

@@ -167,6 +167,25 @@ export class TesterCommand extends CommandRunner {
     try {
       //await this.testProcessAppointments();
       //  await this.testRooms('5338812b-64b4-41a3-9f91-9346b7a959e9');
+      try {
+        const slots = await this.availabilityService.getDailySlotsForSeller({
+          sellerId: '8d6897e3-eae0-4dc0-8773-02ffafb23365',
+          packageId: 'f1a5c1e8-0002-4000-9000-000000000002',
+          dateStr: '2025-09-15',
+          slotMinutes: 15,
+        });
+
+        const sellerAvailability = await this.availabilityService.getDefaultAvailabilityForSeller(
+          {
+            sellerId: '8d6897e3-eae0-4dc0-8773-02ffafb23365',
+            dayOfWeek0Sun: 1,
+          },
+        );
+
+        console.log(sellerAvailability);
+      } catch (error) {
+        console.log(error);
+      }
     } catch (error) {
       console.log(error);
     }

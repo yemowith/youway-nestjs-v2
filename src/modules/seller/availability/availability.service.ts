@@ -79,7 +79,7 @@ export class AvailabilityService {
     return unavailabilities;
   }
 
-  private async getDefaultAvailabilityForSeller(params: {
+  public async getDefaultAvailabilityForSeller(params: {
     sellerId: string;
     dayOfWeek0Sun: number;
   }): Promise<any> {
