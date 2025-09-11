@@ -427,9 +427,6 @@ export class AppointmentService {
         profileImage: await this.avatarService.getProfileAvatar(
           appointment.seller,
         ),
-        profileImages: await this.profileImagesService.getProfileImagesWithFallback(
-          appointment.userId,
-        ),
       },
     };
   }
