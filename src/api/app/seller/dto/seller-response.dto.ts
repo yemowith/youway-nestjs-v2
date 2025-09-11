@@ -7,6 +7,7 @@ import {
   IsBoolean,
 } from 'class-validator';
 import { SellerPackageDto } from 'src/modules/seller/packages/dto';
+import { ProfileImageDto } from 'src/modules/seller/profile-images/dto/profile-images.dto';
 
 export class UserIdentityDto {
   @IsString()
@@ -162,6 +163,9 @@ export class SellerProfileDto {
   @IsOptional()
   @IsString()
   profileImage?: string;
+
+  @IsOptional()
+  profileImages?: ProfileImageDto;
 }
 
 export class PaginationDto {

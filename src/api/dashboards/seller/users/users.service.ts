@@ -102,10 +102,12 @@ export class UsersService {
     });
 
     // Process users to include avatar URLs
-    const processedUsers = users.map((user) => ({
-      ...user,
-      profileImage: this.avatarService.getProfileAvatar(user),
-    })) as UserResponseDto[];
+    const processedUsers: UserResponseDto[] = await Promise.all(
+      users.map(async (user) => ({
+        ...user,
+        profileImage: await this.avatarService.getProfileAvatar(user),
+      })),
+    );
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limit);
@@ -154,7 +156,7 @@ export class UsersService {
 
     return {
       ...user,
-      profileImage: this.avatarService.getProfileAvatar(user),
+      profileImage: await this.avatarService.getProfileAvatar(user),
     } as UserResponseDto;
   }
 

@@ -6,6 +6,7 @@ import { SellerListQueryDto } from './dto/seller-list-query.dto';
 import { SellerListResponseDto } from './dto/seller-response.dto';
 import { Status, UserStatus, UserType } from '@prisma/client';
 import { PackagesService } from 'src/modules/seller/packages/packages.service';
+import { ProfileImagesService } from 'src/modules/seller/profile-images/profile-images.service';
 
 @Injectable()
 export class SellerService {
@@ -13,6 +14,7 @@ export class SellerService {
     private readonly prisma: PrismaService,
     private readonly ratingService: RatingService,
     private readonly avatarService: AvatarsService,
+    private readonly profileImagesService: ProfileImagesService,
     private readonly packagesService: PackagesService,
   ) {}
 
@@ -198,10 +200,15 @@ export class SellerService {
       sellerProfiles,
     );
 
-    const profiles = sellersWithRating.map((seller) => ({
-      ...seller,
-      profileImage: this.avatarService.getProfileAvatar(seller.user),
-    }));
+    const profiles = await Promise.all(
+      sellersWithRating.map(async (seller) => ({
+        ...seller,
+        profileImage: await this.avatarService.getProfileAvatar(seller.user),
+        profileImages: await this.profileImagesService.getProfileImagesWithFallback(
+          seller.id,
+        ),
+      })),
+    );
 
     return {
       data: profiles,
@@ -352,7 +359,10 @@ export class SellerService {
     return {
       ...profile,
       packages,
-      profileImage: this.avatarService.getProfileAvatar(profile.user),
+      profileImage: await this.avatarService.getProfileAvatar(profile.user),
+      profileImages: await this.profileImagesService.getProfileImagesWithFallback(
+        profile.id,
+      ),
     };
   }
 }

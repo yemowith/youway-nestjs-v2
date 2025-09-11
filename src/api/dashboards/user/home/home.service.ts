@@ -117,7 +117,7 @@ export class HomeService {
     const profiles = await Promise.all(
       sellersWithRating.map(async (seller) => ({
         ...seller,
-        profileImage: this.avatarService.getProfileAvatar(seller.user),
+        profileImage: await this.avatarService.getProfileAvatar(seller.user),
         packages: await this.packagesService.getSellerPackages(seller.userId),
       })),
     );

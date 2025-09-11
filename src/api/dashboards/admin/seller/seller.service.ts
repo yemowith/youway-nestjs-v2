@@ -102,12 +102,14 @@ export class SellerService {
       this.prisma.user.count({ where }),
     ]);
 
-    const newData = data.map((item) => {
-      return {
-        ...item,
-        profileImage: this.avatarService.getProfileAvatar(item),
-      };
-    });
+    const newData = await Promise.all(
+      data.map(async (item) => {
+        return {
+          ...item,
+          profileImage: await this.avatarService.getProfileAvatar(item),
+        };
+      }),
+    );
 
     return {
       rows: newData,

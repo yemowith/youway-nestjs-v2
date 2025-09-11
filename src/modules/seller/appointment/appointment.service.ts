@@ -10,6 +10,7 @@ import { DateTime } from 'luxon';
 import { AppointmentResponseDto } from './dto/appointment-response.dto';
 import { PackagesService } from '../packages/packages.service';
 import { AvatarsService } from 'src/modules/user/avatar/avatars.service';
+import { ProfileImagesService } from '../profile-images/profile-images.service';
 
 @Injectable()
 export class AppointmentService {
@@ -22,6 +23,7 @@ export class AppointmentService {
     private readonly eventEmitter: EventEmitter2,
     private readonly packagesService: PackagesService,
     private readonly avatarService: AvatarsService,
+    private readonly profileImagesService: ProfileImagesService,
   ) {}
 
   public async checkSlotAvailability(params: {
@@ -347,7 +349,9 @@ export class AppointmentService {
         ...appointment,
         seller: {
           ...appointment.seller,
-          profileImage: this.avatarService.getProfileAvatar(appointment.seller),
+          profileImage: await this.avatarService.getProfileAvatar(
+            appointment.seller,
+          ),
         },
         package: await this.packagesService.getPackageById(
           appointment.packageId,
@@ -414,11 +418,18 @@ export class AppointmentService {
       ),
       user: {
         ...appointment.user,
-        profileImage: this.avatarService.getProfileAvatar(appointment.user),
+        profileImage: await this.avatarService.getProfileAvatar(
+          appointment.user,
+        ),
       },
       seller: {
         ...appointment.seller,
-        profileImage: this.avatarService.getProfileAvatar(appointment.seller),
+        profileImage: await this.avatarService.getProfileAvatar(
+          appointment.seller,
+        ),
+        profileImages: await this.profileImagesService.getProfileImagesWithFallback(
+          appointment.userId,
+        ),
       },
     };
   }
@@ -492,11 +503,15 @@ export class AppointmentService {
         ...appointment,
         user: {
           ...appointment.user,
-          profileImage: this.avatarService.getProfileAvatar(appointment.user),
+          profileImage: await this.avatarService.getProfileAvatar(
+            appointment.user,
+          ),
         },
         seller: {
           ...appointment.seller,
-          profileImage: this.avatarService.getProfileAvatar(appointment.seller),
+          profileImage: await this.avatarService.getProfileAvatar(
+            appointment.seller,
+          ),
         },
         package: await this.packagesService.getPackageById(
           appointment.packageId,
@@ -570,11 +585,15 @@ export class AppointmentService {
         ...appointment,
         user: {
           ...appointment.user,
-          profileImage: this.avatarService.getProfileAvatar(appointment.user),
+          profileImage: await this.avatarService.getProfileAvatar(
+            appointment.user,
+          ),
         },
         seller: {
           ...appointment.seller,
-          profileImage: this.avatarService.getProfileAvatar(appointment.seller),
+          profileImage: await this.avatarService.getProfileAvatar(
+            appointment.seller,
+          ),
         },
         package: await this.packagesService.getPackageById(
           appointment.packageId,

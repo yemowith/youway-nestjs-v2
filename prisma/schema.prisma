@@ -323,7 +323,23 @@ model SellerProfile {
   therapySchools SellerProfileTherapySchool[]
   comments       Comment[]
 
+  sellerProfileImage SellerProfileImage?
+
   @@index([userId])
+}
+
+model SellerProfileImage {
+  id              String   @id @default(uuid()) @db.Uuid
+  sellerProfileId String   @unique @db.Uuid
+  originalUrl     String?  @db.VarChar(255)
+  thumbnailUrl    String?  @db.VarChar(255)
+  coverUrl        String?  @db.VarChar(255)
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime @updatedAt @db.Timestamp(6)
+
+  profile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+
+  @@index([sellerProfileId])
 }
 
 model Message {

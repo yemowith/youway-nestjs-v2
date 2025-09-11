@@ -98,7 +98,23 @@ export class AvatarsService {
     return this.generateSvg(options);
   }
 
-  getProfileAvatar(user: any): string {
+  async getProfileAvatar(user: any): Promise<string> {
+    if (user.id) {
+      const seller = await this.prisma.sellerProfile.findUnique({
+        where: { userId: user.id },
+        include: {
+          sellerProfileImage: true,
+        },
+      });
+      if (seller && seller.sellerProfileImage?.thumbnailUrl) {
+        if (
+          seller.sellerProfileImage.thumbnailUrl &&
+          seller.sellerProfileImage.thumbnailUrl !== ''
+        ) {
+          return seller.sellerProfileImage.thumbnailUrl;
+        }
+      }
+    }
     const baseUrl = this.configService.get<string>(
       'app.baseUrl',
       'http://localhost:3000',

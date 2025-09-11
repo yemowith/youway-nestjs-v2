@@ -3,19 +3,19 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
-} from '@nestjs/common'
-import { EventEmitter2 } from '@nestjs/event-emitter'
-import { PrismaService } from 'src/clients/prisma/prisma.service'
+} from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { PrismaService } from 'src/clients/prisma/prisma.service';
 import {
   UserProfileDto,
   UserReferralWithProfileDto,
-} from 'src/api/dashboards/user/referral/dto/referral.dto'
+} from 'src/api/dashboards/user/referral/dto/referral.dto';
 import {
   NewReferralRegisteredEvent,
   REFERRAL_EVENTS,
-} from 'src/events/referral/referral.events'
-import { AvatarsService } from '../avatar/avatars.service'
-import { randomBytes } from 'crypto'
+} from 'src/events/referral/referral.events';
+import { AvatarsService } from '../avatar/avatars.service';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class ReferralService {
@@ -29,17 +29,17 @@ export class ReferralService {
     const referral = await this.prisma.userReferral.findFirst({
       where: { referralCode },
       select: { id: true },
-    })
+    });
 
-    return !!referral
+    return !!referral;
   }
 
   async getCountChildren(referralId: string): Promise<number> {
     const count = await this.prisma.userReferral.count({
       where: { referralId },
-    })
+    });
 
-    return count
+    return count;
   }
 
   async getUserReferral(userId: string): Promise<UserReferralWithProfileDto> {
@@ -62,12 +62,12 @@ export class ReferralService {
           },
         },
       },
-    })
+    });
 
     if (!referral) {
       throw new NotFoundException(
         'User referral not found. Please register first.',
-      )
+      );
     }
 
     const userProfile: UserProfileDto = {
@@ -77,8 +77,8 @@ export class ReferralService {
       fullName: `${referral.user.firstName} ${referral.user.lastName}`.trim(),
       profileImage:
         referral.user.profileImage ||
-        this.avatarsService.getProfileAvatar(referral.user),
-    }
+        (await this.avatarsService.getProfileAvatar(referral.user)),
+    };
 
     const sponsorProfile: UserProfileDto | undefined = referral.referral
       ? {
@@ -88,11 +88,11 @@ export class ReferralService {
           fullName: `${referral.referral.firstName} ${referral.referral.lastName}`.trim(),
           profileImage:
             referral.user.profileImage ||
-            this.avatarsService.getProfileAvatar(referral.referral),
+            (await this.avatarsService.getProfileAvatar(referral.referral)),
         }
-      : undefined
+      : undefined;
 
-    const childrenCount = await this.getCountChildren(referral.userId)
+    const childrenCount = await this.getCountChildren(referral.userId);
 
     return {
       id: referral.id,
@@ -104,7 +104,7 @@ export class ReferralService {
       childrenCount: childrenCount,
       createdAt: referral.createdAt,
       updatedAt: referral.updatedAt,
-    }
+    };
   }
 
   async getUserChildren(userId: string): Promise<UserReferralWithProfileDto[]> {
@@ -127,7 +127,7 @@ export class ReferralService {
           },
         },
       },
-    })
+    });
 
     const referralsWithCounts = await Promise.all(
       referrals.map(async (referral) => {
@@ -138,8 +138,8 @@ export class ReferralService {
           fullName: `${referral.user.firstName} ${referral.user.lastName}`.trim(),
           profileImage:
             referral.user.profileImage ||
-            this.avatarsService.getProfileAvatar(referral.user),
-        }
+            (await this.avatarsService.getProfileAvatar(referral.user)),
+        };
 
         const sponsorProfile: UserProfileDto | undefined = referral.referral
           ? {
@@ -149,11 +149,11 @@ export class ReferralService {
               fullName: `${referral.referral.firstName} ${referral.referral.lastName}`.trim(),
               profileImage:
                 referral.user.profileImage ||
-                this.avatarsService.getProfileAvatar(referral.referral),
+                (await this.avatarsService.getProfileAvatar(referral.referral)),
             }
-          : undefined
+          : undefined;
 
-        const childrenCount = await this.getCountChildren(referral.userId)
+        const childrenCount = await this.getCountChildren(referral.userId);
 
         return {
           id: referral.id,
@@ -165,47 +165,47 @@ export class ReferralService {
           childrenCount,
           createdAt: referral.createdAt,
           updatedAt: referral.updatedAt,
-        }
+        };
       }),
-    )
+    );
 
-    return referralsWithCounts
+    return referralsWithCounts;
   }
 
   private async generateUniqueReferralCode(): Promise<string> {
-    let referralCode: string = ''
-    let isCodeUnique = false
+    let referralCode: string = '';
+    let isCodeUnique = false;
 
     while (!isCodeUnique) {
       // Generate an 8-character uppercase hex string
-      referralCode = randomBytes(4).toString('hex').toUpperCase()
+      referralCode = randomBytes(4).toString('hex').toUpperCase();
       const existingReferral = await this.prisma.userReferral.findFirst({
         where: { referralCode },
-      })
+      });
       if (!existingReferral) {
-        isCodeUnique = true
+        isCodeUnique = true;
       }
     }
-    return referralCode
+    return referralCode;
   }
 
   async generateReferralProfile(userId: string) {
     const userReferralCount = await this.prisma.userReferral.count({
       where: { userId },
-    })
+    });
 
     if (userReferralCount > 0) {
-      return // Profile already exists
+      return; // Profile already exists
     }
 
-    const newReferralCode = await this.generateUniqueReferralCode()
+    const newReferralCode = await this.generateUniqueReferralCode();
 
     await this.prisma.userReferral.create({
       data: {
         userId: userId,
         referralCode: newReferralCode,
       },
-    })
+    });
   }
 
   async saveUserReferral(
@@ -224,10 +224,10 @@ export class ReferralService {
           },
         },
       },
-    })
+    });
 
     if (!userReferral) {
-      throw new BadRequestException('User referral not found')
+      throw new BadRequestException('User referral not found');
     }
 
     // Check referral code is valid and exists
@@ -243,10 +243,10 @@ export class ReferralService {
           },
         },
       },
-    })
+    });
 
     if (!sponsorReferral) {
-      throw new BadRequestException('Referral code not found')
+      throw new BadRequestException('Referral code not found');
     }
 
     await this.prisma.userReferral.update({
@@ -254,7 +254,7 @@ export class ReferralService {
       data: {
         referralId: sponsorReferral.userId,
       },
-    })
+    });
 
     // Emit referral registered event
     const referralRegisteredEvent: NewReferralRegisteredEvent = {
@@ -262,8 +262,8 @@ export class ReferralService {
       sponsorId: sponsorReferral.userId,
       referralCode: referralCode,
       timestamp: new Date(),
-    }
-    this.eventEmitter.emit(REFERRAL_EVENTS.REGISTERED, referralRegisteredEvent)
+    };
+    this.eventEmitter.emit(REFERRAL_EVENTS.REGISTERED, referralRegisteredEvent);
 
     const userProfile: UserProfileDto = {
       id: userReferral.id,
@@ -272,8 +272,8 @@ export class ReferralService {
       fullName: `${userReferral.user.firstName} ${userReferral.user.lastName}`.trim(),
       profileImage:
         userReferral.user.profileImage ||
-        this.avatarsService.getProfileAvatar(userReferral.user),
-    }
+        (await this.avatarsService.getProfileAvatar(userReferral.user)),
+    };
 
     const sponsorProfile: UserProfileDto = {
       id: sponsorReferral.userId,
@@ -282,10 +282,10 @@ export class ReferralService {
       fullName: `${sponsorReferral.user.firstName} ${sponsorReferral.user.lastName}`.trim(),
       profileImage:
         sponsorReferral.user.profileImage ||
-        this.avatarsService.getProfileAvatar(sponsorReferral.user),
-    }
+        (await this.avatarsService.getProfileAvatar(sponsorReferral.user)),
+    };
 
-    const childrenCount = await this.getCountChildren(userReferral.userId)
+    const childrenCount = await this.getCountChildren(userReferral.userId);
 
     return {
       id: sponsorReferral.id,
@@ -297,6 +297,6 @@ export class ReferralService {
       childrenCount,
       createdAt: sponsorReferral.createdAt,
       updatedAt: sponsorReferral.updatedAt,
-    }
+    };
   }
 }

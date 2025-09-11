@@ -138,7 +138,7 @@ export class AppointmentsService {
           user: appointment.user
             ? {
                 ...appointment.user,
-                profileImage: this.avatarService.getProfileAvatar(
+                profileImage: await this.avatarService.getProfileAvatar(
                   appointment.user,
                 ),
               }
@@ -146,7 +146,7 @@ export class AppointmentsService {
           seller: appointment.seller
             ? {
                 ...appointment.seller,
-                profileImage: this.avatarService.getProfileAvatar(
+                profileImage: await this.avatarService.getProfileAvatar(
                   appointment.seller,
                 ),
               }
@@ -217,13 +217,15 @@ export class AppointmentsService {
       user: appointment.user
         ? {
             ...appointment.user,
-            profileImage: this.avatarService.getProfileAvatar(appointment.user),
+            profileImage: await this.avatarService.getProfileAvatar(
+              appointment.user,
+            ),
           }
         : undefined,
       seller: appointment.seller
         ? {
             ...appointment.seller,
-            profileImage: this.avatarService.getProfileAvatar(
+            profileImage: await this.avatarService.getProfileAvatar(
               appointment.seller,
             ),
           }

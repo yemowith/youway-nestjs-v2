@@ -9,6 +9,7 @@ import { PackagesModule } from '../packages/packages.module';
 import { AvatarsModule } from 'src/api/dashboards/user/profiles/avatars/avatars.module';
 import { CronModule } from './cron/cron.module';
 import { ProcessAppointmentsModule } from './process-appointments/process-appointments.module';
+import { ProfileImagesModule } from '../profile-images/profile-images.module';
 
 @Global()
 @Module({
@@ -23,6 +24,7 @@ import { ProcessAppointmentsModule } from './process-appointments/process-appoin
     AvatarsModule,
     CronModule,
     ProcessAppointmentsModule,
+    ProfileImagesModule,
   ],
 })
 export class AppointmentModule {}

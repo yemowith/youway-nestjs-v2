@@ -44,7 +44,7 @@ export class ProfilesService {
       fullName: `${user.firstName} ${user.lastName}`,
       firstName: user.firstName,
       lastName: user.lastName,
-      profileImage: this.getProfileAvatar(user),
+      profileImage: await this.getProfileAvatar(user),
       about: user.about || undefined,
       birthDate: user.birthDate || undefined,
       role: await this.getProfileRole(userId),
@@ -100,8 +100,8 @@ export class ProfilesService {
     return isSeller ? ProfileRolle.SELLER : ProfileRolle.USER;
   }
 
-  getProfileAvatar(user: any): string {
-    return this.avatarsService.getProfileAvatar(user);
+  async getProfileAvatar(user: any): Promise<string> {
+    return await this.avatarsService.getProfileAvatar(user);
   }
 
   async getUserReferral(userId: string) {

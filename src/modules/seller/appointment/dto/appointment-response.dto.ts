@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AppointmentStatus } from '@prisma/client';
 import { SellerPackageDto } from '../../packages/dto';
+import { ProfileImageDto } from '../../profile-images/dto/profile-images.dto';
 
 export class UserDto {
   @ApiProperty({
@@ -52,6 +53,12 @@ export class SellerDto {
     example: 'https://example.com/profile.jpg',
   })
   profileImage?: string;
+
+  @ApiProperty({
+    description: 'Seller profile images',
+    example: 'https://example.com/profile.jpg',
+  })
+  profileImages?: ProfileImageDto;
 }
 
 export class PackageDto {

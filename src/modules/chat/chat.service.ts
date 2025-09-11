@@ -61,7 +61,7 @@ export class ChatService {
         });
         return {
           ...user,
-          profileImage: this.avatarsService.getProfileAvatar(user),
+          profileImage: await this.avatarsService.getProfileAvatar(user),
           lastMessage,
         };
       }),
@@ -113,7 +113,7 @@ export class ChatService {
       messages,
       receiver: {
         ...receiver,
-        profileImage: this.avatarsService.getProfileAvatar(receiver),
+        profileImage: await this.avatarsService.getProfileAvatar(receiver),
       },
     };
   }
@@ -162,16 +162,22 @@ export class ChatService {
     });
 
     // Process messages to include avatar URLs
-    return messages.map((message) => ({
-      ...message,
-      sender: {
-        ...message.sender,
-        profileImage: this.avatarsService.getProfileAvatar(message.sender),
-      },
-      receiver: {
-        ...message.receiver,
-        profileImage: this.avatarsService.getProfileAvatar(message.receiver),
-      },
-    }));
+    return await Promise.all(
+      messages.map(async (message) => ({
+        ...message,
+        sender: {
+          ...message.sender,
+          profileImage: await this.avatarsService.getProfileAvatar(
+            message.sender,
+          ),
+        },
+        receiver: {
+          ...message.receiver,
+          profileImage: await this.avatarsService.getProfileAvatar(
+            message.receiver,
+          ),
+        },
+      })),
+    );
   }
 }
