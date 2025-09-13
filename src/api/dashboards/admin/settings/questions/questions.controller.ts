@@ -15,16 +15,20 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 export type QuestionResponse = {
   id: string;
   question: string;
+  questionKey: string;
   answers: any; // JSON field
   group: string;
+  sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type QuestionInput = {
   question: string;
+  questionKey: string;
   answers: any; // JSON field
   group?: string;
+  sortOrder?: number;
 };
 
 @ApiTags('Admin - Questions')
@@ -68,6 +72,12 @@ export class QuestionsController {
   @ApiOperation({ summary: 'Get all question groups' })
   async getGroups(): Promise<string[]> {
     return this.questionsService.getGroups();
+  }
+
+  @Get('ai/questions')
+  @ApiOperation({ summary: 'Get questions for AI chatbot in correct order' })
+  async getQuestionsForAI(): Promise<QuestionResponse[]> {
+    return this.questionsService.findAllForAI();
   }
 
   @Get('group/:group')

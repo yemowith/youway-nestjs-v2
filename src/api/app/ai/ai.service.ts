@@ -24,7 +24,7 @@ export class AiService {
     const questions = await this.prisma.question.findMany({
       where,
       take,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { sortOrder: 'asc' },
     });
 
     return questions;

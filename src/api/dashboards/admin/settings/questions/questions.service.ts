@@ -26,6 +26,7 @@ export class QuestionsService {
     if (search) {
       where.OR = [
         { question: { contains: search, mode: 'insensitive' } },
+        { questionKey: { contains: search, mode: 'insensitive' } },
         { group: { contains: search, mode: 'insensitive' } },
       ];
     }
@@ -34,11 +35,18 @@ export class QuestionsService {
       where.group = group;
     }
 
-    let orderBy: any = { createdAt: 'desc' };
+    let orderBy: any = [{ sortOrder: 'asc' }, { createdAt: 'desc' }];
     if (sortBy) {
-      const allowedSortFields = ['question', 'group', 'createdAt', 'updatedAt'];
+      const allowedSortFields = [
+        'question',
+        'questionKey',
+        'group',
+        'sortOrder',
+        'createdAt',
+        'updatedAt',
+      ];
       if (allowedSortFields.includes(sortBy)) {
-        orderBy = { [sortBy]: sortOrder };
+        orderBy = [{ [sortBy]: sortOrder }];
       }
     }
 
@@ -69,7 +77,7 @@ export class QuestionsService {
   async findByGroup(group: string): Promise<QuestionResponse[]> {
     return this.prisma.question.findMany({
       where: { group },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     });
   }
 
@@ -77,19 +85,27 @@ export class QuestionsService {
     const groups = await this.prisma.question.findMany({
       select: { group: true },
       distinct: ['group'],
-      orderBy: { group: 'asc' },
+      orderBy: [{ group: 'asc' }],
     });
     return groups.map((g) => g.group);
   }
 
   async create(data: QuestionInput): Promise<QuestionResponse> {
-    const { question, answers, group = 'general' } = data;
+    const {
+      question,
+      questionKey,
+      answers,
+      group = 'general',
+      sortOrder = 0,
+    } = data;
 
     return this.prisma.question.create({
       data: {
         question,
+        questionKey,
         answers,
         group,
+        sortOrder,
       },
     });
   }
@@ -100,8 +116,11 @@ export class QuestionsService {
 
     const updateData: any = {};
     if (data.question !== undefined) updateData.question = data.question;
+    if (data.questionKey !== undefined)
+      updateData.questionKey = data.questionKey;
     if (data.answers !== undefined) updateData.answers = data.answers;
     if (data.group !== undefined) updateData.group = data.group;
+    if (data.sortOrder !== undefined) updateData.sortOrder = data.sortOrder;
 
     return this.prisma.question.update({
       where: { id },
@@ -121,10 +140,17 @@ export class QuestionsService {
       where: {
         OR: [
           { question: { contains: q, mode: 'insensitive' } },
+          { questionKey: { contains: q, mode: 'insensitive' } },
           { group: { contains: q, mode: 'insensitive' } },
         ],
       },
-      orderBy: { question: 'asc' },
+      orderBy: [{ sortOrder: 'asc' }, { question: 'asc' }],
+    });
+  }
+
+  async findAllForAI(): Promise<QuestionResponse[]> {
+    return this.prisma.question.findMany({
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
     });
   }
 }
