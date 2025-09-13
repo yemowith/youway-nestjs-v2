@@ -126,14 +126,10 @@ export class HomeService {
   }
 
   async getStatistics(userId: string) {
-    const appointments = 0;
-
-    const appointmentsThisMonth = 0;
-
-    return {
-      appointments,
-      appointmentsThisMonth,
-    };
+    const statistics = await this.appointmentsService.getAppointmentsStats({
+      userId,
+    });
+    return statistics;
   }
 
   async getReferralProfile(userId: string) {

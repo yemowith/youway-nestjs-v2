@@ -599,4 +599,40 @@ export class AppointmentService {
       })),
     );
   }
+
+  async getAppointmentsStats({
+    userId,
+    sellerId,
+  }: {
+    userId?: string;
+    sellerId?: string;
+  }): Promise<{ appointments: number; appointmentsThisMonth: number }> {
+    const appointments = await this.prisma.appointment.count({
+      where: {
+        ...(userId && { userId }),
+        ...(sellerId && { sellerId }),
+        status: {
+          in: [AppointmentStatus.SCHEDULED, AppointmentStatus.COMPLETED],
+        },
+      },
+    });
+
+    const appointmentsThisMonth = await this.prisma.appointment.count({
+      where: {
+        ...(userId && { userId }),
+        ...(sellerId && { sellerId }),
+        status: {
+          in: [AppointmentStatus.SCHEDULED, AppointmentStatus.COMPLETED],
+        },
+        startTime: {
+          gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+        },
+      },
+    });
+
+    return {
+      appointments,
+      appointmentsThisMonth,
+    };
+  }
 }
