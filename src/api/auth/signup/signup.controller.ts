@@ -11,7 +11,7 @@ export class SignUpController {
   constructor(private readonly signUpService: SignUpService) {}
 
   @Post('phone/register')
-  @ApiOperation({ summary: 'Register a new user with a phone number' })
+  @ApiOperation({ summary: 'Register a new user with a phone number.' })
   @ApiBody({ type: PhoneRegisterDto })
   @ApiResponse({
     status: 201,
