@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserType, Status } from '@prisma/client';
+import { UserType, Status, Sex } from '@prisma/client';
 import { UserLocationDto } from 'src/modules/user/location/dto/location.dto';
 
 export enum ProfileRolle {
@@ -50,7 +50,10 @@ export class ProfileResponseDto {
   about?: string;
 
   @ApiProperty({ required: false })
-  birthDate?: Date;
+  birthYear?: number;
+
+  @ApiProperty({ required: false })
+  sex?: Sex;
 
   @ApiProperty({ enum: ProfileRolle })
   role: ProfileRolle;

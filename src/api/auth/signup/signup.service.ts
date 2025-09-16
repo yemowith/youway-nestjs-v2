@@ -97,6 +97,8 @@ export class SignUpService {
           lastName,
           metadata,
           password: hashedPassword,
+          birthYear: metadata?.birthYear,
+          sex: metadata?.sex,
           identities: {
             create: {
               provider: 'PHONE',
@@ -165,6 +167,8 @@ export class SignUpService {
           lastName,
           metadata,
           password: hashedPassword,
+          birthYear: metadata?.birthYear,
+          sex: metadata?.sex,
           identities: {
             create: {
               provider: 'EMAIL',

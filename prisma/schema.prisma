@@ -31,25 +31,35 @@ enum UserType {
   SELLER
 }
 
+enum Sex {
+  MALE
+  FEMALE
+  OTHER
+}
+
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
-  type      UserType   @default(INDIVIDUAL)
-  firstName String     @db.VarChar(100)
-  lastName  String     @db.VarChar(100)
-  metadata  Json?
-  status    UserStatus @default(PENDING)
-  password  String?
+  id        String   @id @default(uuid()) @db.Uuid
+  type      UserType @default(INDIVIDUAL)
+  firstName String   @db.VarChar(100)
+  lastName  String   @db.VarChar(100)
+
+  metadata Json?
+  status   UserStatus @default(PENDING)
+  password String?
 
   identities    Identity[]
   devices       Device[]
   refreshTokens RefreshToken[]
   otps          Otp[]
 
-  profileImage String?   @db.VarChar(255)
-  about        String?   @db.Text
-  birthDate    DateTime? @db.Date
-  createdAt    DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime  @default(now()) @db.Timestamp(6)
+  profileImage String? @db.VarChar(255)
+  about        String? @db.Text
+
+  birthYear Int? @db.Integer
+  sex       Sex?
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
 
   // Options
   UserOption UserOption[]
