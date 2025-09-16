@@ -10,7 +10,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserType, UserStatus, AuthProvider } from '@prisma/client';
+import { UserType, UserStatus, AuthProvider, Sex } from '@prisma/client';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // Custom type for identity responses
@@ -30,7 +30,8 @@ type UserResponse = {
   status: UserStatus;
   profileImage: string | null;
   about: string | null;
-  birthDate: Date | null;
+  birthYear?: number | null;
+  sex?: Sex | null;
   createdAt: Date;
   updatedAt: Date;
   identities: IdentityResponse[];

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/clients/prisma/prisma.service';
-import { User, UserType, UserStatus, AuthProvider } from '@prisma/client';
+import { User, UserType, UserStatus, AuthProvider, Sex } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 // Custom type for identity responses
@@ -20,7 +20,8 @@ type UserResponse = {
   status: UserStatus;
   profileImage: string | null;
   about: string | null;
-  birthDate: Date | null;
+  birthYear?: number | null;
+  sex?: Sex | null;
   createdAt: Date;
   updatedAt: Date;
   identities: IdentityResponse[];
@@ -99,7 +100,8 @@ export class UsersService {
           status: true,
           profileImage: true,
           about: true,
-          birthDate: true,
+          birthYear: true,
+          sex: true,
           createdAt: true,
           updatedAt: true,
           identities: {
@@ -135,7 +137,7 @@ export class UsersService {
         status: true,
         profileImage: true,
         about: true,
-        birthDate: true,
+
         createdAt: true,
         updatedAt: true,
         identities: {
@@ -169,7 +171,8 @@ export class UsersService {
         status: true,
         profileImage: true,
         about: true,
-        birthDate: true,
+        birthYear: true,
+        sex: true,
         createdAt: true,
         updatedAt: true,
         identities: {
@@ -197,8 +200,10 @@ export class UsersService {
         type: true,
         status: true,
         profileImage: true,
+        birthYear: true,
+        sex: true,
         about: true,
-        birthDate: true,
+
         createdAt: true,
         updatedAt: true,
         identities: {
@@ -229,7 +234,8 @@ export class UsersService {
         status: true,
         profileImage: true,
         about: true,
-        birthDate: true,
+        birthYear: true,
+        sex: true,
         createdAt: true,
         updatedAt: true,
         identities: {
