@@ -167,7 +167,9 @@ export class SignUpService {
           lastName,
           metadata,
           password: hashedPassword,
-          birthYear: metadata?.birthYear,
+          birthYear: metadata?.birthYear
+            ? parseInt(metadata.birthYear)
+            : undefined,
           sex: metadata?.sex,
           identities: {
             create: {

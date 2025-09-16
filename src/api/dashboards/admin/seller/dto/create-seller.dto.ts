@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UserStatus, Status, AuthProvider } from '@prisma/client';
+import { UserStatus, Status, AuthProvider, Sex } from '@prisma/client';
 
 class CreateUserDto {
   @IsNotEmpty()
@@ -24,6 +24,12 @@ class CreateUserDto {
 
   @IsEnum(UserStatus)
   status: UserStatus;
+
+  @IsOptional()
+  birthYear?: number;
+
+  @IsOptional()
+  sex?: Sex;
 
   // Add other user fields as needed
 }

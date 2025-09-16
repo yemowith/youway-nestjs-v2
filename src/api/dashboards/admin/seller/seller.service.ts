@@ -182,6 +182,8 @@ export class SellerService {
       const user = await tx.user.create({
         data: {
           ...dto.user,
+          birthYear: dto.user.birthYear,
+          sex: dto.user.sex,
           password: hashedPassword,
           type: 'SELLER',
           sellerProfile: {
@@ -255,6 +257,8 @@ export class SellerService {
           where: { id },
           data: {
             ...dto.user,
+            birthYear: dto.user.birthYear,
+            sex: dto.user.sex,
           },
         });
 
