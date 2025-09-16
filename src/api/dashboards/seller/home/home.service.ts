@@ -35,7 +35,7 @@ export class HomeService {
   }
 
   async getStatistics(sellerId: string): Promise<StatisticsDto> {
-    // Get current month date range
+    // Get current month date rang
     const now = new Date();
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const currentMonthEnd = new Date(

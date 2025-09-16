@@ -133,37 +133,74 @@ export class ChatService {
   }
 
   async getLastMessages(userId: string, limit: number = 10) {
-    // Get the last messages where the user is either sender or receiver
-    const messages = await this.prisma.message.findMany({
+    // Get unique conversation partners with their latest message timestamp using groupBy
+    // Only get messages where the user is the receiver (messages FROM other users)
+    const conversations = await this.prisma.message.groupBy({
+      by: ['senderId'],
       where: {
-        OR: [{ senderId: userId }, { receiverId: userId }],
-        isDeleted: false, // Exclude deleted messages
+        receiverId: userId, // Only messages sent TO the user
+        isDeleted: false,
       },
-      orderBy: { createdAt: 'desc' },
+      _max: {
+        createdAt: true, // Get the latest message timestamp per sender
+      },
+      orderBy: {
+        _max: {
+          createdAt: 'desc', // Order by latest message first
+        },
+      },
       take: limit,
-      include: {
-        sender: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            profileImage: true,
-          },
-        },
-        receiver: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            profileImage: true,
-          },
-        },
-      },
     });
+
+    // Extract unique sender IDs (other users who sent messages to the current user)
+    const senderIds = conversations
+      .map((conv) => conv.senderId)
+      .filter((senderId) => senderId !== null);
+
+    // Get the actual last messages from each sender
+    const lastMessages = await Promise.all(
+      senderIds.map(async (senderId) => {
+        const lastMessage = await this.prisma.message.findFirst({
+          where: {
+            senderId: senderId,
+            receiverId: userId,
+            isDeleted: false,
+          },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            sender: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                profileImage: true,
+              },
+            },
+            receiver: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                profileImage: true,
+              },
+            },
+          },
+        });
+        return lastMessage;
+      }),
+    );
+
+    // Filter out null messages and sort by creation date
+    const validMessages = lastMessages
+      .filter((message) => message !== null)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
 
     // Process messages to include avatar URLs
     return await Promise.all(
-      messages.map(async (message) => ({
+      validMessages.map(async (message) => ({
         ...message,
         sender: {
           ...message.sender,
