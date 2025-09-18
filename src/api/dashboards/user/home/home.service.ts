@@ -146,16 +146,40 @@ export class HomeService {
     return appointment;
   }
 
+  async getLastSellers() {
+    const sellers = await this.prisma.sellerProfile.findMany({
+      where: {
+        sellerProfileImage: {
+          thumbnailUrl: {
+            not: null,
+          },
+        },
+      },
+      select: {
+        id: true,
+        sellerProfileImage: {
+          select: {
+            thumbnailUrl: true,
+          },
+        },
+      },
+      take: 4,
+    });
+    return sellers;
+  }
+
   async getHomeData(userId: string) {
     const latestAppointment = await this.getLatestAppointment(userId);
     const sellers = await this.getSellersList(userId);
     const referral = await this.getReferralProfile(userId);
     const statistics = await this.getStatistics(userId);
+    const lastSellers = await this.getLastSellers();
     return {
       latestAppointment,
       sellers,
       referral,
       statistics,
+      lastSellers,
     };
   }
 }

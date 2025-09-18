@@ -7,6 +7,7 @@ import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 import { MenuModule } from '../cms/menu/menu.module';
 import { AppController } from './app.controller';
 import { AiModule } from './ai/ai.module';
+import { HelpModule } from './help/help.module';
 
 @Module({
   providers: [AppService],
@@ -17,6 +18,7 @@ import { AiModule } from './ai/ai.module';
     PaymentMethodsModule,
     MenuModule,
     AiModule,
+    HelpModule,
   ],
   exports: [SellerModule],
   controllers: [AppController],
